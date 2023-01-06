@@ -30,6 +30,7 @@ body {
 
 .item {
 	padding-top: 10px;
+	padding-right: 10px;
 	position: relative;
 	text-align: center;
 }
