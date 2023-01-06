@@ -46,11 +46,11 @@ body {
 }
 
 -------
-.count {
+.count_btn {
     display: flex;
 }
 
-.count .change {
+.count_btn .change {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -63,7 +63,7 @@ body {
     cursor: pointer;
 }
 
-.count input {
+.count_btn input {
     max-width: 55px;
     text-align: center;
     font-weight: 700;
@@ -73,7 +73,7 @@ body {
     margin: 0 5px;
 }
 
-.count .minus.min {
+.count_btn .minus.min {
     background-color: #989797;
 }
 
