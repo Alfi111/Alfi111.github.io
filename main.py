@@ -9,4 +9,4 @@ dp = Dispatcher(bot, loop)
 
 if __name__ == '__main__':
     from handlers import dp
-    executor.start_polling(dp)
+    executor.start_polling(dp, loop=loop)
