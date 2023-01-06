@@ -73,7 +73,7 @@ body {
     margin: 0 5px;
 }
 
-.count_btn .minus.min {
+.count_btn .minus .min .plus {
     background-color: #989797;
 }
 
