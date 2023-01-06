@@ -1,37 +1,94 @@
 from aiogram.types import Message, ContentType
-from aiogram.types import PreCheckoutQuery, LabeledPrice
+from aiogram.types import Message, CallbackQuery, PreCheckoutQuery, LabeledPrice
 from aiogram.dispatcher.filters import Command
+from aiogram.types.message import ContentType
 
-from main import bot, dp
 from config import PAYMENTS_TOKEN
+from main import bot, dp
+from shop import keyboard, cb
 
 from keyboards import keyboard
+import sqlite3
 
 @dp.message_handler(Command('start'))
 async def start(message: Message):
-    await bot.send_message(message.chat.id,
-                           'Тест TG-приложения',
-                           reply_markup=keyboard)
+    connect = sqlite3.connect('shop.db')
+    cursor = connect.cursor()
+    cursor.execute("""INSERT INTO users (user_id, name) VALUES (?, ?)""", [message.chat.id, message.chat.first_name])
+    cursor.close()
+    connect.commit()
+    connect.close()
 
 PRICE = {
-    '1': [LabeledPrice(label='Item1', amount=1000000)],
-    '2': [LabeledPrice(label='Item2', amount=2000000)],
-    '3': [LabeledPrice(label='Item3', amount=3000000)],
-    '4': [LabeledPrice(label='Item4', amount=4000000)],
-    '5': [LabeledPrice(label='Item5', amount=5000000)],
-    '6': [LabeledPrice(label='Item6', amount=6000000)]
+    '1': [LabeledPrice(label='Бургер 1', amount=10000)],
+    '2': [LabeledPrice(label='Бургер 2', amount=20000)],
+    '3': [LabeledPrice(label='Бургер 3', amount=30000)],
+    '4': [LabeledPrice(label='Бургер 4', amount=40000)],
+    '5': [LabeledPrice(label='Бургер 5', amount=50000)],
+    '6': [LabeledPrice(label='Бургер 6', amount=60000)]
 }
 
-@dp.message_handler(content_types='web_app_data')
-async def buy_process(web_app_message):
-    await bot.send_invoice(web_app_message.chat.id,
-                           title='Title',
-                           description='Title',
+@dp.message_handler(Command('cart'))
+async def cart(message: Message):
+    await message.answer('Что хотите купить?', reply_markup=keyboard)
+
+@dp.callback_query_handler(cb.filter(id='1'))
+async def smart(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=10)
+
+    product_id = callback_data.get('id')
+    user_id = call.message.chat.id
+
+    connect = sqlite3.connect('shop.db')
+    cursor = connect.cursor()
+    cursor.execute("""INSERT INTO cart (user_id, product_id) VALUES (?, ?)""", [user_id, product_id])
+    cursor.close()
+    connect.commit()
+    connect.close()
+
+    await call.message.answer('Добавлено!')
+
+@dp.callback_query_handler(cb.filter(id='2'))
+async def lap(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=10)
+
+    product_id = callback_data.get('id')
+    user_id = call.message.chat.id
+
+    connect = sqlite3.connect('shop.db')
+    cursor = connect.cursor()
+    cursor.execute("""INSERT INTO cart (user_id, product_id) VALUES (?, ?)""", [user_id, product_id])
+    cursor.close()
+    connect.commit()
+    connect.close()
+
+    await call.message.answer('Добавлено!')
+
+@dp.message_handler(Command('buy'))
+async def buy(message: Message):
+    connect = sqlite3.connect('shop.db')
+    cursor = connect.cursor()
+    data = cursor.execute("""SELECT * FROM cart WHERE user_id=(?)""", [message.chat.id]).fetchall()
+    cursor.close()
+    connect.commit()
+    cursor = connect.cursor()
+    print(data)
+    new_data = []
+    for i in range(len(data)):
+        new_data.append(cursor.execute("""SELECT * FROM products WHERE id=(?)""", [data[i][1]]).fetchall())
+    cursor.close()
+    connect.commit()
+    connect.close()
+    new_data = [new_data[i][0] for i in range(len(new_data))]
+    prices = [LabeledPrice(label=i[1], amount=i[2]) for i in new_data]
+
+    await bot.send_invoice(message.chat.id,
+                           title='Cart',
+                           description='Description',
                            provider_token=PAYMENTS_TOKEN,
                            currency='rub',
                            need_email=True,
-                           need_phone_number=True,
-                           prices=PRICE[f'{web_app_message.web_app_data.data}'],
+                           prices=prices,
                            start_parameter='example',
                            payload='some_invoice')
 
@@ -40,6 +97,11 @@ async def checkout_process(pre_checkout_query: PreCheckoutQuery):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
 
 @dp.message_handler(content_types=ContentType.SUCCESSFUL_PAYMENT)
-async def successful_payment(message: Message):
-    await bot.send_message(message.chat.id,
-                           'Платеж совершен успешно!')
+async def s_pay(message: Message):
+    connect = sqlite3.connect('shop.db')
+    cursor = connect.cursor()
+    cursor.execute("""DELETE FROM cart WHERE user_id=(?)""", [message.chat.id])
+    cursor.close()
+    connect.commit()
+    connect.close()
+    await bot.send_message(message.chat.id, 'Платеж прошел успешно!!!')
