@@ -115,7 +115,7 @@ body {
 	top: 15px;
 	border: none;
 	background: rgb(248, 168, 24);
-	border-radius: 25px;
+	padding: 10px 15px;
 	color: #fff;
 	text-transform: uppercase;
 	font-weight: 700;
