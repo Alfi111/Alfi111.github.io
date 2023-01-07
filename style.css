@@ -114,6 +114,7 @@ body {
 	right: 35px;
 	top: 10px;
 	border: none;
+	border-radius: 15px;
 	background: rgb(248, 168, 24);
 	padding: 15px 10px;
 	color: #fff;
