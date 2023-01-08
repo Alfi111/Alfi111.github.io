@@ -1,14 +1,18 @@
 .board {
-    width: 400px;
-    margin: auto
+	position: relative;
+    width: 340px;
+    margin: 5px 10px 10px 10px;
 }
 
 .info {
     width: 400px;
-    margin: auto;
+    margin: 0px 10px 10px 10px;
 }
 
 .move-history {
-    max-height: 100px;
+    height: 100px;
+    max-width: 340px;
     overflow-y: scroll;
+    margin: 10px 10px 10px 10px;
+    border: 1px solid black;
 }
