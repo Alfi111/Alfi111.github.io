@@ -5,12 +5,6 @@ tg.expand();
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
-let buttonCountPlus = document.getElementById("buttonCountPlus");
-let buttonCountMinus = document.getElementById("buttonCountMinus");
-let count = document.getElementById("buttonCountNumber");
-//let count2 = document.getElementById("num");
-let number = 1;
-
 let item = "";
 
 let btn1 = document.getElementById("btn1");
@@ -64,7 +58,7 @@ open.addEventListener('click', function() {
 });
 
 close.addEventListener('click', function() {
-  if(count_btn.style.display == 'inline-block') 
+  if(count_btn.style.display == 'inline-block' && number <= 1) 
 	count_btn.style.display = 'none';
 	open.style.display = 'inline-block'
 });
@@ -251,13 +245,17 @@ Telegram.WebApp.onEvent("mainButtonClicked", function(){
 });
 
 //счетчик
+let buttonCountPlus = document.getElementById("buttonCountPlus");
+let buttonCountMinus = document.getElementById("buttonCountMinus");
+let count = document.getElementById("buttonCountNumber");
+//let count2 = document.getElementById("num");
+let number = 1;
 
 buttonCountPlus.onclick = function() {
     if (number <= 9) {
     	count.style.display = 'block';
         number++;
         count.innerHTML = number;
-        //count2.value = number * price;
     }
 };
 
@@ -265,7 +263,6 @@ buttonCountMinus.onclick = function() {
    if (number >= 2) {
        number--;
        count.innerHTML = number;
-       //count2.value = number * price;
     }
 };
 
