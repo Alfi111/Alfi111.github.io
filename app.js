@@ -58,7 +58,7 @@ open.addEventListener('click', function() {
 });
 
 close.addEventListener('click', function() {
-  if(count_btn.style.display == 'inline-block' && number <= 1) 
+  if(count_btn.style.display == 'inline-block') 
 	count_btn.style.display = 'none';
 	open.style.display = 'inline-block'
 });
