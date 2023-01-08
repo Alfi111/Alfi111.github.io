@@ -7,12 +7,6 @@ from config import PAYMENTS_TOKEN
 
 from keyboards import keyboard
 
-@dp.message_handler(Command('start'))
-async def start(message: Message):
-    await bot.send_message(message.chat.id,
-                           'Тест приложения',
-                           reply_markup=keyboard)
-
 PRICE = {
     '1': [LabeledPrice(label='Item1', amount=1000000)],
     '2': [LabeledPrice(label='Item2', amount=2000000)],
