@@ -38,6 +38,11 @@ var close4 = document.querySelector('.close4');
 var close5 = document.querySelector('.close5');
 var close6 = document.querySelector('.close6');
 
+var plus = document.querySelector('.plus');
+var minus = document.querySelector('.minus');
+
+
+
 count_btn.style.display = 'none';
 count_btn2.style.display = 'none';
 count_btn3.style.display = 'none';
@@ -53,7 +58,7 @@ open.addEventListener('click', function() {
 });
 
 close.addEventListener('click', function() {
-  if(count_btn.style.display == 'inline-block' && number <= 1) 
+  if(count_btn.style.display == 'inline-block') 
 	count_btn.style.display = 'none';
 	open.style.display = 'inline-block'
 });
@@ -117,6 +122,9 @@ close6.addEventListener('click', function() {
 	count_btn6.style.display = 'none';
 	open6.style.display = 'inline-block'
 });
+
+
+
 
 // $(document).ready(function(){
 //   $('.item').each(function(){
@@ -237,7 +245,6 @@ Telegram.WebApp.onEvent("mainButtonClicked", function(){
 });
 
 //счетчик
-
 let buttonCountPlus = document.getElementById("buttonCountPlus");
 let buttonCountMinus = document.getElementById("buttonCountMinus");
 let count = document.getElementById("buttonCountNumber");
@@ -249,7 +256,6 @@ buttonCountPlus.onclick = function() {
     	count.style.display = 'block';
         number++;
         count.innerHTML = number;
-        //count2.value = number * price;
     }
 };
 
@@ -257,30 +263,17 @@ buttonCountMinus.onclick = function() {
    if (number >= 2) {
        number--;
        count.innerHTML = number;
-       //count2.value = number * price;
     }
-    document.getElementById("buttonCountNumber").classList.add('animateCount');
 };
 
-// анимация счетчика
-// const animPlus = document.querySelector('.plus');
-// const animMinus = document.querySelector('.minus');
-// animPlus.onclick = () => document.querySelector('.buttonCountNumber').classList.add('animateCount');
-// animMinus.onclick = () => document.querySelector('.buttonCountNumber').classList.add('animateCount');
 
-console.log(count.innerHTML);
 
 let usercard = document.getElementById("usercard");
 
 let p = document.createElement("p");
 
-p.innerText = `${tg.initDataUnsafe.user.first_name} 
+p.innerText = `${tg.initDataUnsafe.user.first_name}
 ${tg.initDataUnsafe.user.last_name}`;
 
 
 usercard.appendChild(p); 
-
-
-
-
-
