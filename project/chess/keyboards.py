@@ -5,7 +5,7 @@ web_app = WebAppInfo(url="https://alfi111.github.io/project/chess/")
 
 keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="Play Chess Game", web_app=web_app)]
+        [KeyboardButton(text="Game", web_app=web_app)]
     ],
     resize_keyboard=True
 )
