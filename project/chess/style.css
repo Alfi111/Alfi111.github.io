@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'Open Sans';
-	src: url(../font/Mistral.ttf); 
+	src: url(../font/Open Sans.ttf); 
 }
 
 body { 
@@ -18,20 +18,20 @@ body {
 }
 
 .board {
-	position: relative;
-    width: 370px;
-    margin: 5px 10px 10px 10px;
+    	position: relative;
+	width: 370px;
+	margin: 5px 10px 10px 10px;
 }
 
 .info {
-    width: 400px;
-    margin: 0px 10px 10px 10px;
+        width: 400px;
+        margin: 0px 10px 10px 10px;
 }
 
 .move-history {
-    height: 100px;
-    max-width: 370px;
-    overflow-y: scroll;
-    margin: 10px 10px 10px 10px;
-    border: 1px solid black;
+        height: 100px;
+        max-width: 370px;
+        overflow-y: scroll;
+	margin: 10px 10px 10px 10px;
+	border: 1px solid grey;
 }
