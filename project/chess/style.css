@@ -21,7 +21,7 @@ body {
 	text-align: center;
 }
 .report {
-	display: hidden;
+	display: none;
 }
 
 .info {
