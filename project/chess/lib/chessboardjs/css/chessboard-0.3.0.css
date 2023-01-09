@@ -7,9 +7,7 @@
  *
  * Date: 10 Aug 2013
  */
-.body {
-  background: grey;
-}
+
 /* clearfix */
 .clearfix-7da63 {
   clear: both;
@@ -68,7 +66,7 @@
   color: black;
 }
 .numeric-fc462 {
-  top: 14px;
+  top: 10px;
   left: -13px;
   color: black;
   font-size: 12px;
