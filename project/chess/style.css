@@ -10,23 +10,23 @@ body {
 	color: var(--tg-theme-text-color);
 	background: var(--tg-theme-bg-color);
 	overflow-x: hidden;
-    overflow-y: hidden;
+    	overflow-y: hidden;
 }
 
 .board {
     position: relative;
-    width: 370px;
+    width: auto;
     margin: 5px 10px 10px 10px;
 }
 
 .info {
-    width: 370px;
+    width: 90%;
     margin: 25px 10px 10px 10px;
 }
 
 .move-history {
     height: 100px;
-    max-width: 370px;
+    max-width: 90%;
     overflow-y: scroll;
     margin: 10px 10px 10px 10px;
     border: 1px solid black;
