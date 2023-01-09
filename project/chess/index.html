@@ -8,14 +8,17 @@
 </head>
 <body>
 <div id="move-history" class="move-history"></div>
+<div class="position">
+    <span>Оценено позиций: <span id="position-count"></span></span>
+<div>
 <div id="board" class="board"></div>
-<div class="report">
+<!-- <div class="report">
     <div class="info">
         Глубина поиска:
         <select id="search-depth">
-            <option value="1">1</option>
+            <option value="1" selected>1</option>
             <option value="2">2</option>
-            <option value="3" selected>3</option>
+            <option value="3">3</option>
             <option value="4">4</option>
             <option value="5">5</option>
         </select>
@@ -30,7 +33,7 @@
         <br>
         <br>
     </div>
-</div>
+</div> -->
 <script src="lib/jquery/jquery-3.2.1.min.js"></script>
 <script src="lib/chessboardjs/js/chess.js"></script>
 <script src="lib/chessboardjs/js/chessboard-0.3.0.js"></script>
