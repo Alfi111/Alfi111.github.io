@@ -192,7 +192,7 @@ var makeBestMove = function () {
     board.position(game.fen());
     renderMoveHistory(game.history());
     if (game.game_over()) {
-        alert('Соперник поставил мат!');
+        alert('Партия окончена!');
     }
 };
 
@@ -200,7 +200,7 @@ var makeBestMove = function () {
 var positionCount;
 var getBestMove = function (game) {
     if (game.game_over()) {
-        alert('Соперник поставил мат!');
+        alert('Партия окончена!');
     }
 
     positionCount = 0;
