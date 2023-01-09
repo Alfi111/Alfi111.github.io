@@ -7,7 +7,9 @@
  *
  * Date: 10 Aug 2013
  */
-
+.body {
+  background: grey;
+}
 /* clearfix */
 .clearfix-7da63 {
   clear: both;
@@ -15,7 +17,7 @@
 
 /* board */
 .board-b72b1 {
-  border: 2px solid #404040;
+  border: 1px solid #404040;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
 }
@@ -61,10 +63,13 @@
   position: absolute;
 }
 .alpha-d2270 {
-  bottom: 1px;
-  right: 3px;
+  bottom: -19px;
+  right: 18px;
+  color: black;
 }
 .numeric-fc462 {
-  top: 2px;
-  left: 2px;
+  top: 14px;
+  left: -13px;
+  color: black;
+  font-size: 12px;
 }
