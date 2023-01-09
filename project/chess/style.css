@@ -1,6 +1,25 @@
+@font-face {
+	font-family: 'Open Sans';
+	src: url(../font/Mistral.ttf); 
+}
+
+body { 
+	margin: 0;
+	padding: 0;
+	font-size: 18px;
+	color: var(--tg-theme-text-color);
+	background: var(--tg-theme-bg-color);
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.container {
+	max-width: 390px;
+}
+
 .board {
 	position: relative;
-    width: 340px;
+    width: 370px;
     margin: 5px 10px 10px 10px;
 }
 
@@ -11,7 +30,7 @@
 
 .move-history {
     height: 100px;
-    max-width: 340px;
+    max-width: 370px;
     overflow-y: scroll;
     margin: 10px 10px 10px 10px;
     border: 1px solid black;
