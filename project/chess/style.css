@@ -20,6 +20,10 @@ body {
 .position {
 	text-align: center;
 }
+.report {
+	display: hidden;
+}
+
 .info {
     width: auto;
     margin: 10px 10px 10px 10px;
