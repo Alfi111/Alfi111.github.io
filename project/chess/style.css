@@ -20,13 +20,14 @@ body {
 
 .info {
     width: auto;
-    margin: 25px 10px 10px 10px;
+    margin: 10px 10px 10px 10px;
 }
 
 .move-history {
-    height: 90px;
+    height: 80px;
     max-width: 100%;
     overflow-y: scroll;
     margin: 10px 10px 10px 10px;
-    border: 1px solid black;
+/*     border: 1px solid black; */
+	padding-left: 10px
 }
