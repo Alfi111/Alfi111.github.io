@@ -16,16 +16,16 @@ body {
 .board {
     position: relative;
     width: auto;
-    margin: 5px 10px 10px 10px;
+    margin: 5px 10px 10px 20px;
 }
 
 .info {
-    width: 90%;
+    width: auto;
     margin: 25px 10px 10px 10px;
 }
 
 .move-history {
-    height: 100px;
+    height: 90px;
     max-width: 90%;
     overflow-y: scroll;
     margin: 10px 10px 10px 10px;
