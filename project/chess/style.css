@@ -17,7 +17,11 @@ body {
     width: auto;
     margin: 5px 10px 10px 20px;
 }
-
+.position span {
+	text-align: center;
+	width: auto;
+    	margin: 10px 10px 10px 10px;
+}
 .info {
     width: auto;
     margin: 10px 10px 10px 10px;
