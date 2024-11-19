@@ -59,3 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+btn-select.addEventListener("click", function(){
+	if (tg.MainButton.isVisible) {
+		tg.MainButton.hide();
+	}
+	else {
+		tg.MainButton.setText("В корзину");
+		tg.MainButton.show();
+	}
+});
+
+Telegram.WebApp.onEvent("mainButtonClicked", function(){
+	tg.sendData(item);
+});
