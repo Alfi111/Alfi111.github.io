@@ -3,6 +3,12 @@ tg.expand();
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
+// Отображаем кнопку "Назад"
+tg.WebApp.setupBackButton();
+
+// Обработчик события закрытия приложения
+let hasItems = false; // Флаг для проверки наличия товаров
+
 document.addEventListener('DOMContentLoaded', () => {
     const items = document.querySelectorAll('.item');
 
@@ -21,15 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Обработчик для кнопки "Выбрать"
         btnSelect.addEventListener('click', () => {
             count = 1; // Устанавливаем счетчик на 1
+            hasItems = true; // Устанавливаем флаг наличия товаров
             updateDisplay();
-            saveToLocalStorage(item.dataset.id, count); // Сохраняем в localStorage
         });
 
         // Обработчик для кнопки "+"
         buttonCountPlus.addEventListener('click', () => {
             count++; // Увеличиваем счетчик
             updateDisplay();
-            saveToLocalStorage(item.dataset.id, count); // Обновляем в localStorage
         });
 
         // Обработчик для кнопки "-"
@@ -38,9 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 count--; // Уменьшаем счетчик, если он больше 1
             } else if (count === 1) {
                 count = 0; // Сбрасываем счетчик
+                hasItems = false; // Сбрасываем флаг наличия товаров
             }
             updateDisplay();
-            saveToLocalStorage(item.dataset.id, count); // Обновляем в localStorage
         });
 
         // Функция обновления отображения
@@ -74,14 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 50);
             }
         }
-
-        // Функция сохранения в localStorage
-        function saveToLocalStorage(itemId, itemCount) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || {};
-            cart[itemId] = itemCount;
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
     });
+});
+
+// Обработчик события нажатия на кнопку "Назад"
+tg.onEvent("backButtonClicked", function() {
+    window.history.back(); // Возврат на предыдущую страницу
+});
+
+// Подтверждение закрытия приложения
+tg.onEvent("closeButtonClicked", function() {
+    if (hasItems) {
+        if (confirm("Вы уверены, что хотите закрыть приложение? Все выбранные товары будут потеряны.")) {
+            tg.close(); // Закрыть приложение
+        }
+    } else {
+        tg.close(); // Закрыть приложение без подтверждения
+    }
 });
 
 Telegram.WebApp.onEvent("mainButtonClicked", function() {
