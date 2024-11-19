@@ -22,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSelect.addEventListener('click', () => {
             count = 1; // Устанавливаем счетчик на 1
             updateDisplay();
+            saveToLocalStorage(item.dataset.id, count); // Сохраняем в localStorage
         });
 
         // Обработчик для кнопки "+"
         buttonCountPlus.addEventListener('click', () => {
             count++; // Увеличиваем счетчик
             updateDisplay();
+            saveToLocalStorage(item.dataset.id, count); // Обновляем в localStorage
         });
 
         // Обработчик для кнопки "-"
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 count = 0; // Сбрасываем счетчик
             }
             updateDisplay();
+            saveToLocalStorage(item.dataset.id, count); // Обновляем в localStorage
         });
 
         // Функция обновления отображения
@@ -56,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Управляем видимостью MainButton
             if (totalCount > 0) {
-                tg.MainButton.setText("В корзину");
+                tg.MainButton.setText("Перейти в корзину");
                 tg.MainButton.show();
             } else {
                 tg.MainButton.hide();
@@ -71,18 +74,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 50);
             }
         }
+
+        // Функция сохранения в localStorage
+        function saveToLocalStorage(itemId, itemCount) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
+            cart[itemId] = itemCount;
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
     });
 });
 
 Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    const selectedItems = Array.from(document.querySelectorAll('.item'))
-        .map(item => {
-            return {
-                count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
-                itemId: item.dataset.id // Получаем идентификатор товара
-            };
-        })
-        .filter(item => item.count > 0);
-
-    tg.sendData(selectedItems);
+    // Переход на страницу корзины
+    window.location.href = 'cart.html';
 });
