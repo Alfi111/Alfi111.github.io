@@ -87,6 +87,7 @@ body {
 }
 
 .product-name {
+	display: inline-block;
 	color: var(--tg-theme-text-color);
 	text-align: center;
 	font-size: 16px;
@@ -95,6 +96,7 @@ body {
 }
 
 .product-price {
+	display: inline-block;
 	color: var(--tg-theme-text-color);
 	text-align: center;
 	font-size: 16px;
