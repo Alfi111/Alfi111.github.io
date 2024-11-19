@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.callback_data import CallbackData
 
-web_app = WebAppInfo(url="https://alfi111.github.io/index.html")
+web_app = WebAppInfo(url="https://alp-kmv.ru")
 
 keyboard = ReplyKeyboardMarkup(
     keyboard=[
