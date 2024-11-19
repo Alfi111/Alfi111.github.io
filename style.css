@@ -87,20 +87,28 @@ body {
 }
 
 .product-name {
-	display: inline-block;
-	color: var(--tg-theme-text-color);
-	text-align: center;
-	font-size: 16px;
-	font-weight: 500;
+    display: inline-block;
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+}
 
+.product-simbol {
+    display: inline-block;
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    vertical-align: super; /* Опускаем символ ниже */
 }
 
 .product-price {
-	display: inline-block;
-	color: var(--tg-theme-text-color);
-	text-align: center;
-	font-size: 16px;
-	font-weight: 500;
+    display: inline-block;
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 .buttonCountNumber {
