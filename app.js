@@ -3,13 +3,17 @@ tg.expand();
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
-// Отображение кнопки возврата
-tg.BackButton.show();
+// Проверяем текущую страницу
+const isLoginPage = window.location.pathname === '/login.html'; // Замените на реальный путь к странице входа
 
-// Обработчик для кнопки возврата
-Telegram.WebApp.onEvent("backButtonClicked", function() {
-    window.history.back(); // Возврат на предыдущую страницу
-});
+if (!isLoginPage) {
+    tg.BackButton.show(); // Показываем кнопку возврата
+    Telegram.WebApp.onEvent("backButtonClicked", function() {
+        window.history.back(); // Возврат на предыдущую страницу
+    });
+} else {
+    tg.BackButton.hide(); // Скрываем кнопку возврата на странице входа
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const items = document.querySelectorAll('.item');
