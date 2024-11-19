@@ -91,5 +91,5 @@ Telegram.WebApp.onEvent("mainButtonClicked", function() {
     });
 
     // Переход на страницу корзины с параметрами
-    window.location.href = `cart.html?${params.toString()}`;
+    window.location.href = `cart.html?${params.toString()}`;ы
 });
