@@ -93,7 +93,7 @@ body {
 	margin-bottom: 10px
 }
 
-.name {
+.product-name {
 	display: block;
 	color: red;
 	text-align: center;
@@ -102,7 +102,7 @@ body {
 
 }
 
-.price {
+.product-price {
 	display: block;
 	color: red;
 	text-align: center;
