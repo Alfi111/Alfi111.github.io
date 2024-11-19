@@ -22,13 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSelect.addEventListener('click', () => {
             count = 1; // Устанавливаем счетчик на 1
             updateDisplay();
-
-            if (tg.MainButton.isVisible) {
-                tg.MainButton.hide();
-            } else {
-                tg.MainButton.setText("В корзину");
-                tg.MainButton.show();
-            }
         });
 
         // Обработчик для кнопки "+"
@@ -55,6 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
             buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "+"
             buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "-"
 
+            // Проверяем общее количество выбранных товаров
+            const totalCount = Array.from(items).reduce((total, currentItem) => {
+                const currentCount = parseInt(currentItem.querySelector('#buttonCountNumber').textContent) || 0;
+                return total + currentCount;
+            }, 0);
+
+            // Управляем видимостью MainButton
+            if (totalCount > 0) {
+                tg.MainButton.setText("В корзину");
+                tg.MainButton.show();
+            } else {
+                tg.MainButton.hide();
+            }
+
             if (count > 0) {
                 // Плавное увеличение и уменьшение
                 buttonCountNumber.style.transition = 'transform 0.1s ease';
@@ -68,5 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    tg.sendData(items);
+    const selectedItems = Array.from(document.querySelectorAll('.item'))
+        .map(item => {
+            return {
+                count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
+                itemId: item.dataset.id // Предполагается, что у вас есть идентификатор товара в data-id
+            };
+        })
+        .filter(item => item.count > 0);
+
+    tg.sendData(selectedItems);
 });
+
