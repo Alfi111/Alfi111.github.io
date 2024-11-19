@@ -1,20 +1,42 @@
 let tg = window.Telegram.WebApp;
-tg.expand();
-tg.MainButton.textColor = "#FFFFFF";
-tg.MainButton.color = "#2cab37";
+tg.expand(); // Разворачиваем приложение
 
 // Проверяем текущую страницу
-const isLoginPage = window.location.pathname === '/index.html'; // Замените на реальный путь к странице входа
+const currentPage = window.location.pathname;
 
-if (!isLoginPage) {
-    tg.BackButton.show(); // Показываем кнопку возврата
-    Telegram.WebApp.onEvent("backButtonClicked", function() {
-        window.history.back(); // Возврат на предыдущую страницу
+if (currentPage === '/index.html') {
+    // На странице index.html скрываем кнопку "Назад" и активируем крестик (по умолчанию)
+    tg.BackButton.hide(); // Скрываем кнопку "Назад", чтобы отображался крестик
+    tg.onEvent("backButtonClicked", function() {
+        // Поведение кнопки "Назад" на index.html (если потребуется)
+        console.log("BackButton clicked on index.html"); 
+    });
+
+    // При возвращении на index.html проверяем, есть ли выбранные товары
+    document.addEventListener('DOMContentLoaded', () => {
+        const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
+            const currentCount = parseInt(currentItem.querySelector('#buttonCountNumber')?.textContent) || 0;
+            return total + currentCount;
+        }, 0);
+
+        if (totalCount > 0) {
+            tg.MainButton.setText("В корзину");
+            tg.MainButton.show();
+        } else {
+            tg.MainButton.hide();
+        }
     });
 } else {
-    tg.BackButton.hide(); // Скрываем кнопку возврата на странице входа
+    // На всех остальных страницах показываем кнопку "Назад"
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", function() {
+        window.history.back(); // Возврат на предыдущую страницу
+    });
+
+    tg.MainButton.hide(); // Скрываем MainButton по умолчанию
 }
 
+// Основная логика работы с товарами
 document.addEventListener('DOMContentLoaded', () => {
     const items = document.querySelectorAll('.item');
 
@@ -68,19 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Управляем видимостью MainButton
             if (totalCount > 0) {
-                tg.MainButton.setText("Перейти в корзину");
+                tg.MainButton.setText("В корзину");
                 tg.MainButton.show();
             } else {
                 tg.MainButton.hide();
-            }
-
-            if (count > 0) {
-                // Плавное увеличение и уменьшение
-                buttonCountNumber.style.transition = 'transform 0.1s ease';
-                buttonCountNumber.style.transform = 'scale(1.3)'; // Увеличиваем на 20%
-                setTimeout(() => {
-                    buttonCountNumber.style.transform = 'scale(1)'; // Возвращаем к исходному размеру
-                }, 50);
             }
         }
     });
