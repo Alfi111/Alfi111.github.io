@@ -74,6 +74,6 @@ btnSelect.addEventListener("click", function() {
 
  Telegram.WebApp.onEvent("mainButtonClicked", function() {
      console.log("Кнопка 'В корзину' нажата"); // Отладочное сообщение
-     tg.sendData(item);
+     tg.sendData(items);
  });
 
