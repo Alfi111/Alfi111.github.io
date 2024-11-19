@@ -3,6 +3,12 @@ tg.expand();
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
+// Отображаем кнопку "Назад"
+tg.WebApp.setupBackButton();
+
+// Обработчик события закрытия приложения
+let hasItems = false; // Флаг для проверки наличия товаров
+
 document.addEventListener('DOMContentLoaded', () => {
     const items = document.querySelectorAll('.item');
 
@@ -21,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Обработчик для кнопки "Выбрать"
         btnSelect.addEventListener('click', () => {
             count = 1; // Устанавливаем счетчик на 1
+            hasItems = true; // Устанавливаем флаг наличия товаров
             updateDisplay();
         });
 
@@ -36,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 count--; // Уменьшаем счетчик, если он больше 1
             } else if (count === 1) {
                 count = 0; // Сбрасываем счетчик
+                hasItems = false; // Сбрасываем флаг наличия товаров
             }
             updateDisplay();
         });
@@ -91,24 +99,6 @@ tg.onEvent("closeButtonClicked", function() {
 });
 
 Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    const selectedItems = Array.from(document.querySelectorAll('.item'))
-        .map(item => {
-            return {
-                count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
-                itemId: item.dataset.id // Получаем идентификатор товара
-            };
-        })
-        .filter(item => item.count > 0);
-
-    // Формируем URL с параметрами
-    const params = new URLSearchParams();
-    selectedItems.forEach(item => {
-        params.append(item.itemId, item.count);
-    });
-
-    // Переход на страницу корзины с параметрами
-    window.location.href = `cart.html?${params.toString()}`;
+    // Переход на страницу корзины
+    window.location.href = 'cart.html';
 });
-
-
-
