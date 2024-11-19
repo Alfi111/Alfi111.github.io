@@ -74,6 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Обработчик события нажатия на кнопку "Назад"
+tg.onEvent("backButtonClicked", function() {
+    window.history.back(); // Возврат на предыдущую страницу
+});
+
+// Подтверждение закрытия приложения
+tg.onEvent("closeButtonClicked", function() {
+    if (hasItems) {
+        if (confirm("Вы уверены, что хотите закрыть приложение? Все выбранные товары будут потеряны.")) {
+            tg.close(); // Закрыть приложение
+        }
+    } else {
+        tg.close(); // Закрыть приложение без подтверждения
+    }
+});
+
 Telegram.WebApp.onEvent("mainButtonClicked", function() {
     const selectedItems = Array.from(document.querySelectorAll('.item'))
         .map(item => {
