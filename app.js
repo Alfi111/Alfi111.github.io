@@ -4,7 +4,7 @@ tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
 // Проверяем текущую страницу
-const isLoginPage = window.location.pathname === '/login.html'; // Замените на реальный путь к странице входа
+const isLoginPage = window.location.pathname === '/index.html'; // Замените на реальный путь к странице входа
 
 if (!isLoginPage) {
     tg.BackButton.show(); // Показываем кнопку возврата
