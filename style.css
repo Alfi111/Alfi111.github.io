@@ -1,15 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&family=Open+Sans:wght@400&display=swap');
 
-@font-face {
-    font-family: 'Helvetica Neue';
-    src: url('https://alfi111.github.io/project/store/font/HelveticaNeueMedium.otf') format('otf'),
-         url('https://alfi111.github.io/project/store/font/HelveticaNeueMedium.otf') format('otf');
-    font-weight: normal;
-    font-style: normal;
+body {
+    font-family: 'Roboto', 'Open Sans', Arial, sans-serif; /* Используйте шрифты по вашему выбору */
 }
 
 body {
-    font-family: 'Pacifico', 'Helvetica Neue', Arial, sans-serif; /* Устанавливаем Pacifico как основной шрифт */
+    font-family: 'Roboto', 'Open Sans', Arial, sans-serif; /* Устанавливаем Pacifico как основной шрифт */
     margin: 0;
     padding: 0;
     font-size: 18px;
