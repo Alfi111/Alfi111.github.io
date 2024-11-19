@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSelect.addEventListener('click', () => {
             count = 1; // Устанавливаем счетчик на 1
             updateDisplay();
+
+            if (tg.MainButton.isVisible) {
+                tg.MainButton.hide();
+            } else {
+                tg.MainButton.setText("В корзину");
+                tg.MainButton.show();
+            }
         });
 
         // Обработчик для кнопки "+"
@@ -60,20 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-btnSelect.addEventListener("click", function() {
-     console.log("Кнопка выбрана"); // Отладочное сообщение
-     if (tg.MainButton.isVisible) {
-         tg.MainButton.hide();
-         console.log("Кнопка скрыта"); // Отладочное сообщение
-     } else {
-         tg.MainButton.setText("В корзину");
-         tg.MainButton.show();
-         console.log("Кнопка показана"); // Отладочное сообщение
-     }
- });
-
- Telegram.WebApp.onEvent("mainButtonClicked", function() {
-     console.log("Кнопка 'В корзину' нажата"); // Отладочное сообщение
-     tg.sendData(items);
- });
-
+Telegram.WebApp.onEvent("mainButtonClicked", function() {
+    tg.sendData(items);
+});
