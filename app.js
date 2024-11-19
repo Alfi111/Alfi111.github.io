@@ -3,6 +3,14 @@ tg.expand();
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#2cab37";
 
+// Отображение кнопки возврата
+tg.BackButton.show();
+
+// Обработчик для кнопки возврата
+Telegram.WebApp.onEvent("backButtonClicked", function() {
+    window.history.back(); // Возврат на предыдущую страницу
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const items = document.querySelectorAll('.item');
 
@@ -91,5 +99,5 @@ Telegram.WebApp.onEvent("mainButtonClicked", function() {
     });
 
     // Переход на страницу корзины с параметрами
-    window.location.href = `cart.html?${params.toString()}`;ы
+    window.location.href = `cart.html?${params.toString()}`;
 });
