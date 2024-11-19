@@ -81,13 +81,13 @@ body {
 }
 
 .descript {
+	display: inline-block;
 	margin-top: -10px;
 	margin-bottom: 10px
 }
 
 .product-name {
-	display: block;
-	color: red;
+	color: var(--tg-theme-text-color);
 	text-align: center;
 	font-size: 16px;
 	font-weight: 500;
@@ -95,8 +95,7 @@ body {
 }
 
 .product-price {
-	display: block;
-	color: red;
+	color: var(--tg-theme-text-color);
 	text-align: center;
 	font-size: 16px;
 	font-weight: 500;
@@ -117,10 +116,6 @@ body {
 	z-index: 10;
 }
 
-.test {
-	font-size: 18px;
-    	color: var(--tg-theme-text-color);
-}
 
 
 
