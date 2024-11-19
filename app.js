@@ -79,11 +79,10 @@ Telegram.WebApp.onEvent("mainButtonClicked", function() {
         .map(item => {
             return {
                 count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
-                itemId: item.dataset.id // Предполагается, что у вас есть идентификатор товара в data-id
+                itemId: item.dataset.id // Получаем идентификатор товара
             };
         })
         .filter(item => item.count > 0);
 
     tg.sendData(selectedItems);
 });
-
