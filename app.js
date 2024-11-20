@@ -1,5 +1,7 @@
 let tg = window.Telegram.WebApp;
 tg.expand(); // Разворачиваем приложение
+tg.MainButton.textColor = "#FFFFFF";
+tg.MainButton.color = "#2cab37";
 
 // Определяем текущую страницу
 const currentPage = window.location.pathname;
@@ -11,7 +13,7 @@ function setupButtons() {
         tg.BackButton.hide(); // Скрываем кнопку "Назад"
         tg.MainButton.hide(); // Скрываем MainButton по умолчанию
     } else {
-        if (currentPage === '/сфке.html')
+        if (currentPage === '/cart.html')
         // На всех остальных страницах показываем кнопку "Назад"
         tg.BackButton.show();// Скрываем MainButton по умолчанию
     }
