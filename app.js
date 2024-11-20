@@ -1,7 +1,5 @@
 let tg = window.Telegram.WebApp;
 tg.expand(); // Разворачиваем приложение
-tg.MainButton.textColor = "#FFFFFF";
-tg.MainButton.color = "#2cab37";
 
 // Определяем текущую страницу
 const currentPage = window.location.pathname;
