@@ -1,21 +1,40 @@
 let tg = window.Telegram.WebApp;
 tg.expand(); // Разворачиваем приложение
-tg.MainButton.textColor = "#FFFFFF";
-tg.MainButton.color = "#2cab37";
 
-// Проверяем текущую страницу
+// Определяем текущую страницу
 const currentPage = window.location.pathname;
 
-if (currentPage === '/index.html') {
-    // На странице index.html скрываем кнопку "Назад" и активируем крестик (по умолчанию)
-    tg.BackButton.hide(); // Скрываем кнопку "Назад", чтобы отображался крестик
-    tg.onEvent("backButtonClicked", function() {
-        // Поведение кнопки "Назад" на index.html (если потребуется)
-        console.log("BackButton clicked on index.html"); 
+// Функция для проверки и управления кнопками
+function setupButtons() {
+    if (currentPage === '/index.html') {
+        // На главной странице показываем кнопку закрытия приложения
+        tg.BackButton.hide(); // Скрываем кнопку "Назад"
+        tg.MainButton.hide(); // Скрываем MainButton по умолчанию
+    } else {
+        // На всех остальных страницах показываем кнопку "Назад"
+        tg.BackButton.show();
+        tg.MainButton.hide(); // Скрываем MainButton по умолчанию
+    }
+
+    tg.onEvent("backButtonClicked", () => {
+        if (currentPage !== '/index.html') {
+            window.history.back(); // Возврат на предыдущую страницу
+        }
     });
 
-    // При возвращении на index.html проверяем, есть ли выбранные товары
-    document.addEventListener('DOMContentLoaded', () => {
+    // Меняем текст MainButton на странице cart.html
+    if (currentPage === '/cart.html') {
+        tg.MainButton.setText("Оплатить");
+        tg.MainButton.show(); // Показываем MainButton на странице cart.html
+    }
+}
+
+// Инициализация кнопок при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    setupButtons();
+
+    if (currentPage === '/index.html') {
+        // Проверяем, есть ли выбранные товары
         const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
             const currentCount = parseInt(currentItem.querySelector('#buttonCountNumber')?.textContent) || 0;
             return total + currentCount;
@@ -24,19 +43,9 @@ if (currentPage === '/index.html') {
         if (totalCount > 0) {
             tg.MainButton.setText("В корзину");
             tg.MainButton.show();
-        } else {
-            tg.MainButton.hide();
         }
-    });
-} else {
-    // На всех остальных страницах показываем кнопку "Назад"
-    tg.BackButton.show();
-    tg.onEvent("backButtonClicked", function() {
-        window.history.back(); // Возврат на предыдущую страницу
-    });
-
-    tg.MainButton.hide(); // Скрываем MainButton по умолчанию
-}
+    }
+});
 
 // Основная логика работы с товарами
 document.addEventListener('DOMContentLoaded', () => {
@@ -90,33 +99,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 return total + currentCount;
             }, 0);
 
-            // Управляем видимостью MainButton
-            if (totalCount > 0) {
-                tg.MainButton.setText("В корзину");
-                tg.MainButton.show();
-            } else {
-                tg.MainButton.hide();
+            // Управляем видимостью MainButton на index.html
+            if (currentPage === '/index.html') {
+                if (totalCount > 0) {
+                    tg.MainButton.setText("В корзину");
+                    tg.MainButton.show();
+                } else {
+                    tg.MainButton.hide();
+                }
             }
         }
     });
 });
 
-Telegram.WebApp.onEvent("mainButtonClicked", function() {
-    const selectedItems = Array.from(document.querySelectorAll('.item'))
-        .map(item => {
-            return {
-                count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
-                itemId: item.dataset.id // Получаем идентификатор товара
-            };
-        })
-        .filter(item => item.count > 0);
+// Обработка нажатия MainButton
+Telegram.WebApp.onEvent("mainButtonClicked", () => {
+    if (currentPage === '/index.html') {
+        // На index.html переход в корзину
+        const selectedItems = Array.from(document.querySelectorAll('.item'))
+            .map(item => {
+                return {
+                    count: parseInt(item.querySelector('#buttonCountNumber').textContent) || 0,
+                    itemId: item.dataset.id // Получаем идентификатор товара
+                };
+            })
+            .filter(item => item.count > 0);
 
-    // Формируем URL с параметрами
-    const params = new URLSearchParams();
-    selectedItems.forEach(item => {
-        params.append(item.itemId, item.count);
-    });
+        const params = new URLSearchParams();
+        selectedItems.forEach(item => {
+            params.append(item.itemId, item.count);
+        });
 
-    // Переход на страницу корзины с параметрами
-    window.location.href = `cart.html?${params.toString()}`;
+        window.location.href = `cart.html?${params.toString()}`;
+    } else if (currentPage === '/cart.html') {
+        // На странице cart.html обработка оплаты
+        alert("Переход к оплате!"); // Ваша логика оплаты
+    }
 });
