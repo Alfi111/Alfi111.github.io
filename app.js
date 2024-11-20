@@ -12,8 +12,8 @@ function setupButtons() {
         // На главной странице показываем кнопку закрытия приложения
         tg.BackButton.hide(); // Скрываем кнопку "Назад"
         tg.MainButton.hide(); // Скрываем MainButton по умолчанию
-    } else {
-        if (currentPage === '/cart.html')
+    }
+    if (currentPage === '/cart.html')
         // На всех остальных страницах показываем кнопку "Назад"
         tg.BackButton.show();// Скрываем MainButton по умолчанию
     }
@@ -25,6 +25,10 @@ function setupButtons() {
     });
 
     // Меняем текст MainButton на странице cart.html
+    if (currentPage === '/index.html') {
+        tg.MainButton.setText("В корзину");
+        tg.MainButton.show(); // Показываем MainButton на странице index.html
+    }
     if (currentPage === '/cart.html') {
         tg.MainButton.setText("Оплатить");
         tg.MainButton.show(); // Показываем MainButton на странице cart.html
