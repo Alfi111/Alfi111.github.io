@@ -11,9 +11,9 @@ function setupButtons() {
         tg.BackButton.hide(); // Скрываем кнопку "Назад"
         tg.MainButton.hide(); // Скрываем MainButton по умолчанию
     } else {
+        if (currentPage === '/сфке.html')
         // На всех остальных страницах показываем кнопку "Назад"
-        tg.BackButton.show();
-        tg.MainButton.hide(); // Скрываем MainButton по умолчанию
+        tg.BackButton.show();// Скрываем MainButton по умолчанию
     }
 
     tg.onEvent("backButtonClicked", () => {
