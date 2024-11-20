@@ -25,9 +25,6 @@ function setupButtons() {
     });
 
     // Меняем текст MainButton на странице cart.html
-    if (currentPage === '/index.html') {
-        tg.MainButton.setText("В корзину");
-        tg.MainButton.show(); // Показываем MainButton на странице index.html
     }
     if (currentPage === '/cart.html') {
         tg.MainButton.setText("Оплатить");
