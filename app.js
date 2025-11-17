@@ -224,20 +224,16 @@ function goToCart() {
 // Обновление страницы корзины
 function updateCartPage() {
     const cartContainer = document.getElementById('cart-items');
-    const totalContainer = document.getElementById('cart-total');
     
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     
     if (cartItems.length === 0) {
         cartContainer.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
-        totalContainer.innerHTML = '';
     } else {
-        let totalAmount = 0;
         let cartHTML = '';
         
         cartItems.forEach(item => {
             const itemTotal = item.price * item.count;
-            totalAmount += itemTotal;
             
             // Получаем эмодзи и описание для товара
             const itemDetails = getItemDetails(item.id);
@@ -258,7 +254,6 @@ function updateCartPage() {
         });
         
         cartContainer.innerHTML = cartHTML;
-        totalContainer.textContent = `PAY ${totalAmount}₽`;
     }
     
     setupCartButton();
