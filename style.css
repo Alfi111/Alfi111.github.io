@@ -280,29 +280,4 @@ body {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
 }
 
-/* Адаптивность */
-@media (max-width: 390px) {
-    .cart-header {
-        padding: 15px 15px 0;
-    }
-    
-    .order-items {
-        padding: 15px;
-    }
-    
-    .comment-section {
-        padding: 15px;
-    }
-    
-    .order-item {
-        padding: 10px 0;
-    }
-    
-    .order-item-name {
-        font-size: 15px;
-    }
-    
-    .order-item-description {
-        font-size: 13px;
-    }
-}
+
