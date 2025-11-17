@@ -1,6 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <title>Магазин</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="inner">
+            <div class="item" data-id="1">
+                <a href="#"><img src="1.png" alt="Product" class="img"></a>
+                <button class="buttonCountNumber"></button>
+                <div class="descript">
+                    <span class="product-name">Бургер</span>
+                    <span class="product-simbol"> • </span>
+                    <span class="product-price">160 ₽</span>
+                </div>
+                <button class="btn open btn-select">Выбрать</button>
+                <div class="count_btn"> 
+                    <button class="btn_count minus close"> - </button>
+                    <button class="btn_count plus"> + </button>
+                </div>
+            </div>
+            <div class="item" data-id="2">
+                <a href="#"><img src="1.png" alt="Product" class="img"></a>
+                <button class="buttonCountNumber"></button>
+                <div class="descript">
+                    <span class="product-name">Пицца</span>
+                    <span class="product-simbol"> • </span>
+                    <span class="product-price">350 руб</span>
+                </div>
+                <button class="btn open btn-select">Выбрать</button>
+                <div class="count_btn"> 
+                    <button class="btn_count minus close"> - </button>
+                    <button class="btn_count plus"> + </button>
+                </div>
+            </div>
+            <div class="item" data-id="3">
+                <a href="#"><img src="1.png" alt="Product" class="img"></a>
+                <button class="buttonCountNumber"></button>
+                <div class="descript">
+                    <span class="product-name">Роллы</span>
+                    <span class="product-simbol"> • </span>
+                    <span class="product-price">250 руб</span>
+                </div>
+                <button class="btn open btn-select">Выбрать</button>
+                <div class="count_btn"> 
+                    <button class="btn_count minus close"> - </button>
+                    <button class="btn_count plus"> + </button>
+                </div>
+            </div>
+            <div class="item" data-id="4">
+                <a href="#"><img src="1.png" alt="Product" class="img"></a>
+                <button class="buttonCountNumber"></button>
+                <div class="descript">
+                    <span class="product-name">Суши</span>
+                    <span class="product-simbol"> • </span>
+                    <span class="product-price">120 руб</span>
+                </div>
+                <button class="btn open btn-select">Выбрать</button>
+                <div class="count_btn"> 
+                    <button class="btn_count minus close"> - </button>
+                    <button class="btn_count plus"> + </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ru">
+<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" href="style.css">
