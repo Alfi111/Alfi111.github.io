@@ -10,80 +10,84 @@ body {
     overflow-x: hidden;
 }
 
+.page {
+    padding: 10px;
+}
+
 .container {
-	max-width: 390px;
+    max-width: 390px;
+    margin: 0 auto;
 }
 
 .inner {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 220px 220px 200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 220px 200px;
+    gap: 10px;
 }
 
 .img {
-	width: 130px;
+    width: 130px;
 }
 
 .item {
-	padding-top: 10px;
-	position: relative;
-	text-align: center;
+    padding-top: 10px;
+    position: relative;
+    text-align: center;
+    border: 1px solid var(--tg-theme-hint-color);
+    border-radius: 12px;
+    padding: 15px 10px;
 }
 
 .btn {
-	display: inline-block;
-	padding: 10px 20px;
-	border: none;
-	background: rgb(248, 168, 24);
-	border-radius: 10px;
-	color: #fff;
-	text-transform: uppercase;
-	font-weight: 700;
-
-	transition: background .3s linear;
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    background: rgb(248, 168, 24);
+    border-radius: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: background .3s linear;
+    cursor: pointer;
 }
 
 .btn:hover {
-	background: rgb(0, 210, 0);
+    background: rgb(0, 210, 0);
 }
-
-.usercard {
-	text-align: center;
-}
-
 
 .minus {
-	display: inline-block;
-	padding: 6px 20px;
-	border: none;
-	background: rgb(248, 0, 0);
-	border-radius: 10px;
-	color: #fff;
-	text-transform: uppercase;
-	font-weight: 700;
-	font-size: 14pt;
-
-	transition: background .3s linear;
+    display: inline-block;
+    padding: 6px 20px;
+    border: none;
+    background: rgb(248, 0, 0);
+    border-radius: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 14pt;
+    transition: background .3s linear;
+    cursor: pointer;
 }
 
 .plus {
-	display: inline-block;
-	padding: 6px 20px;
-	border: none;
-	background: rgb(248, 168, 24);
-	border-radius: 10px;
-	color: #fff;
-	text-transform: uppercase;
-	font-weight: 700;
-	font-size: 14pt;
-
-	transition: background .3s linear;
+    display: inline-block;
+    padding: 6px 20px;
+    border: none;
+    background: rgb(248, 168, 24);
+    border-radius: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 14pt;
+    transition: background .3s linear;
+    cursor: pointer;
 }
 
 .descript {
-	display: inline-block;
-	margin-top: -10px;
-	margin-bottom: 10px
+    display: inline-block;
+    margin-top: -10px;
+    margin-bottom: 10px
 }
 
 .product-name {
@@ -111,35 +115,72 @@ body {
 }
 
 .buttonCountNumber {
-	display: none;
-	position: absolute;
-	right: 25px;
-	top: 10px;
-	border: none;
-	border-radius: 12px;
-	background: rgb(248, 168, 24);
-	padding: 3px 7px;
-	color: #fff;
-	text-transform: uppercase;
-	font-weight: 700;
-	z-index: 10;
+    display: none;
+    position: absolute;
+    right: 25px;
+    top: 10px;
+    border: none;
+    border-radius: 12px;
+    background: rgb(248, 168, 24);
+    padding: 3px 7px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    z-index: 10;
 }
 
 .count_btn {
     display: none;
 }
 
-/* Стили для зеленой MainButton Telegram */
-.tg-main-button {
-    background: rgb(0, 210, 0) !important;
-    color: white !important;
+/* Стили для корзины */
+.cart-container {
+    max-width: 390px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/*
-var(--tg-theme-bg-color)
-var(--tg-theme-text-color)
-var(--tg-theme-hint-color)
-var(--tg-theme-link-color)
-var(--tg-theme-button-color)
-var(--tg-theme-button-text-color)
-*/
+.cart-title {
+    text-align: center;
+    color: var(--tg-theme-text-color);
+    margin-bottom: 20px;
+}
+
+.cart-item {
+    border-bottom: 1px solid var(--tg-theme-hint-color);
+    padding: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item-name {
+    font-weight: bold;
+    color: var(--tg-theme-text-color);
+}
+
+.cart-item-details {
+    color: var(--tg-theme-hint-color);
+    font-size: 14px;
+}
+
+.cart-item-total {
+    font-weight: bold;
+    color: var(--tg-theme-text-color);
+}
+
+.cart-total {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid var(--tg-theme-button-color);
+    text-align: right;
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--tg-theme-text-color);
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--tg-theme-text-color);
+}
