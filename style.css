@@ -11,86 +11,99 @@ body {
 }
 
 .container {
-    max-width: 390px;
-    margin: 0 auto;
+	max-width: 390px;
 }
 
 .inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(4, 220px);
-    gap: 10px;
-    padding: 10px;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 220px 220px 200px;
 }
 
 .img {
-    width: 130px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
+	width: 130px;
 }
 
 .item {
-    padding-top: 10px;
-    position: relative;
-    text-align: center;
-    border: 1px solid var(--tg-theme-hint-color);
-    border-radius: 12px;
-    padding: 15px 10px;
+	padding-top: 10px;
+	position: relative;
+	text-align: center;
 }
 
 .btn {
-    display: inline-block;
-    padding: 10px 20px;
-    border: none;
-    background: var(--tg-theme-button-color, rgb(248, 168, 24));
-    border-radius: 10px;
-    color: var(--tg-theme-button-text-color, #fff);
-    text-transform: uppercase;
-    font-weight: 700;
-    transition: background .3s linear;
-    cursor: pointer;
-    margin-top: 5px;
+	display: inline-block;
+	padding: 10px 20px;
+	border: none;
+	background: rgb(248, 168, 24);
+	border-radius: 10px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 700;
+
+	transition: background .3s linear;
 }
 
 .btn:hover {
-    background: rgb(0, 210, 0);
+	background: rgb(0, 210, 0);
 }
 
+.usercard {
+	text-align: center;
+}
+
+
 .minus {
-    display: inline-block;
-    padding: 6px 12px;
-    border: none;
-    background: rgb(248, 0, 0);
-    border-radius: 10px;
-    color: #fff;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 14pt;
-    transition: background .3s linear;
-    cursor: pointer;
+	display: inline-block;
+	padding: 6px 20px;
+	border: none;
+	background: rgb(248, 0, 0);
+	border-radius: 10px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 700;
+	font-size: 14pt;
+
+	transition: background .3s linear;
 }
 
 .plus {
-    display: inline-block;
-    padding: 6px 12px;
-    border: none;
-    background: var(--tg-theme-button-color, rgb(248, 168, 24));
-    border-radius: 10px;
-    color: var(--tg-theme-button-text-color, #fff);
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 14pt;
-    transition: background .3s linear;
-    cursor: pointer;
+	display: inline-block;
+	padding: 6px 20px;
+	border: none;
+	background: rgb(248, 168, 24);
+	border-radius: 10px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 700;
+	font-size: 14pt;
+
+	transition: background .3s linear;
 }
 
 .descript {
-    display: block;
-    margin: 10px 0;
+	display: inline-block;
+	margin-top: -10px;
+	margin-bottom: 10px
 }
 
-.product-name, .product-simbol, .product-price {
+.product-name {
+    display: inline-block;
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.product-simbol {
+    display: inline-block;
+    color: var(--tg-theme-text-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.product-price {
+    display: inline-block;
     color: var(--tg-theme-text-color);
     text-align: center;
     font-size: 16px;
@@ -98,46 +111,35 @@ body {
 }
 
 .buttonCountNumber {
-    display: none;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    border: none;
-    border-radius: 50%;
-    background: var(--tg-theme-button-color, rgb(248, 168, 24));
-    padding: 5px 10px;
-    color: var(--tg-theme-button-text-color, #fff);
-    font-weight: 700;
-    z-index: 10;
-    min-width: 25px;
-    height: 25px;
-    font-size: 14px;
+	display: none;
+	position: absolute;
+	right: 25px;
+	top: 10px;
+	border: none;
+	border-radius: 12px;
+	background: rgb(248, 168, 24);
+	padding: 3px 7px;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 700;
+	z-index: 10;
 }
 
 .count_btn {
     display: none;
-    gap: 5px;
-    justify-content: center;
-    margin-top: 5px;
 }
 
-.count_btn.show {
-    display: flex;
+/* Стили для зеленой MainButton Telegram */
+.tg-main-button {
+    background: rgb(0, 210, 0) !important;
+    color: white !important;
 }
 
-.btn.hide {
-    display: none;
-}
-
-/* Адаптивность для мобильных */
-@media (max-width: 390px) {
-    .inner {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(4, 200px);
-    }
-    
-    .img {
-        width: 110px;
-        height: 80px;
-    }
-}
+/*
+var(--tg-theme-bg-color)
+var(--tg-theme-text-color)
+var(--tg-theme-hint-color)
+var(--tg-theme-link-color)
+var(--tg-theme-button-color)
+var(--tg-theme-button-text-color)
+*/
