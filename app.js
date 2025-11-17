@@ -1,58 +1,74 @@
 let tg = window.Telegram.WebApp;
-tg.expand(); // Разворачиваем приложение
+tg.expand();
 
 // Определяем текущую страницу
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-// Функция для проверки и управления кнопками
-function setupButtons() {
+// Инициализация приложения
+document.addEventListener('DOMContentLoaded', () => {
+    setupTelegramButtons();
+    
     if (currentPage === 'index.html') {
-        // На главной странице скрываем кнопку "Назад"
+        initProductPage();
+    } else if (currentPage === 'cart.html') {
+        initCartPage();
+    }
+});
+
+// Настройка Telegram кнопок
+function setupTelegramButtons() {
+    // Скрываем кнопку "Назад" на главной странице
+    if (currentPage === 'index.html') {
         tg.BackButton.hide();
-        tg.MainButton.hide(); // Скрываем MainButton по умолчанию
+        tg.MainButton.hide();
         
         // Настраиваем зеленую кнопку
         tg.MainButton.setParams({
             color: '#00D200' // Зеленый цвет
         });
-    } else if (currentPage === 'cart.html') {
-        // На странице корзины показываем кнопку "Назад"
+    } else {
         tg.BackButton.show();
-        tg.MainButton.setText("Оплатить");
-        tg.MainButton.show();
+        tg.BackButton.onClick(() => {
+            window.history.back();
+        });
     }
 
-    tg.onEvent("backButtonClicked", () => {
-        if (currentPage !== 'index.html') {
-            window.history.back(); // Возврат на предыдущую страницу
+    // Обработчик MainButton
+    tg.MainButton.onClick(() => {
+        if (currentPage === 'index.html') {
+            goToCart();
+        } else if (currentPage === 'cart.html') {
+            processPayment();
         }
     });
 }
 
-// Основная логика работы с товарами
-function initProducts() {
+// Логика для страницы товаров
+function initProductPage() {
     const items = document.querySelectorAll('.item');
+    let selectedItems = [];
 
     items.forEach((item, index) => {
-        // Получаем элементы по ID, но добавляем индекс для уникальности
+        // Получаем элементы с учетом дублирующихся ID
         const buttonCountNumber = item.querySelector('#buttonCountNumber');
         const btnSelect = item.querySelector('#btn-select');
         const buttonCountPlus = item.querySelector('#buttonCountPlus');
         const buttonCountMinus = item.querySelector('#buttonCountMinus');
-        const countBtn = item.querySelector('.count_btn');
+        const countButtons = item.querySelector('.count_btn');
 
         let count = 0;
 
-        // Скрываем кнопки + и - по умолчанию
+        // Скрываем элементы управления количеством
         if (buttonCountPlus) buttonCountPlus.style.display = 'none';
         if (buttonCountMinus) buttonCountMinus.style.display = 'none';
-        if (countBtn) countBtn.style.display = 'none';
+        if (countButtons) countButtons.style.display = 'none';
 
         // Обработчик для кнопки "Выбрать"
         if (btnSelect) {
             btnSelect.addEventListener('click', () => {
-                count = 1; // Устанавливаем счетчик на 1
-                updateDisplay();
+                count = 1;
+                updateItemDisplay();
+                updateSelectedItems();
                 updateMainButton();
             });
         }
@@ -60,8 +76,9 @@ function initProducts() {
         // Обработчик для кнопки "+"
         if (buttonCountPlus) {
             buttonCountPlus.addEventListener('click', () => {
-                count++; // Увеличиваем счетчик
-                updateDisplay();
+                count++;
+                updateItemDisplay();
+                updateSelectedItems();
                 updateMainButton();
             });
         }
@@ -70,108 +87,139 @@ function initProducts() {
         if (buttonCountMinus) {
             buttonCountMinus.addEventListener('click', () => {
                 if (count > 1) {
-                    count--; // Уменьшаем счетчик, если он больше 1
-                } else if (count === 1) {
-                    count = 0; // Сбрасываем счетчик
+                    count--;
+                } else {
+                    count = 0;
                 }
-                updateDisplay();
+                updateItemDisplay();
+                updateSelectedItems();
                 updateMainButton();
             });
         }
 
-        // Функция обновления отображения
-        function updateDisplay() {
+        function updateItemDisplay() {
+            // Обновляем отображение счетчика
             if (buttonCountNumber) {
-                buttonCountNumber.textContent = count > 0 ? count : ''; // Обновляем текст счетчика
-                buttonCountNumber.style.display = count > 0 ? 'block' : 'none'; // Показываем или скрываем счетчик
+                buttonCountNumber.textContent = count;
+                buttonCountNumber.style.display = count > 0 ? 'block' : 'none';
             }
             
+            // Управляем видимостью кнопок
             if (btnSelect) {
-                btnSelect.style.display = count === 0 ? 'inline-block' : 'none'; // Показываем кнопку "Выбрать", если счетчик 0
+                btnSelect.style.display = count === 0 ? 'inline-block' : 'none';
             }
-            
+            if (countButtons) {
+                countButtons.style.display = count > 0 ? 'block' : 'none';
+            }
             if (buttonCountPlus) {
-                buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "+"
+                buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none';
             }
-            
             if (buttonCountMinus) {
-                buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "-"
+                buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none';
             }
+        }
+
+        function updateSelectedItems() {
+            const itemId = item.dataset.id;
+            const itemName = item.querySelector('.product-name').textContent;
+            const itemPriceText = item.querySelector('.product-price').textContent;
+            const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, '')); // Убираем все нецифровые символы
             
-            if (countBtn) {
-                countBtn.style.display = count > 0 ? 'block' : 'none'; // Показываем контейнер кнопок
-            }
-        }
-    });
-}
-
-// Функция обновления главной кнопки
-function updateMainButton() {
-    const items = document.querySelectorAll('.item');
-    let totalCount = 0;
-
-    items.forEach(item => {
-        const buttonCountNumber = item.querySelector('#buttonCountNumber');
-        if (buttonCountNumber) {
-            const currentCount = parseInt(buttonCountNumber.textContent) || 0;
-            totalCount += currentCount;
-        }
-    });
-
-    if (totalCount > 0) {
-        tg.MainButton.setText(`В корзину (${totalCount})`);
-        tg.MainButton.show();
-    } else {
-        tg.MainButton.hide();
-    }
-}
-
-// Функция перехода в корзину
-function goToCart() {
-    const items = document.querySelectorAll('.item');
-    const selectedItems = [];
-
-    items.forEach(item => {
-        const buttonCountNumber = item.querySelector('#buttonCountNumber');
-        if (buttonCountNumber) {
-            const count = parseInt(buttonCountNumber.textContent) || 0;
+            // Обновляем массив выбранных товаров
+            selectedItems = selectedItems.filter(i => i.id !== itemId);
+            
             if (count > 0) {
                 selectedItems.push({
-                    id: item.dataset.id,
-                    name: item.querySelector('.product-name').textContent,
-                    price: item.querySelector('.product-price').textContent,
+                    id: itemId,
+                    name: itemName,
+                    price: itemPrice,
                     count: count
                 });
             }
         }
     });
 
-    if (selectedItems.length > 0) {
-        // Сохраняем данные в localStorage
-        localStorage.setItem('cartItems', JSON.stringify(selectedItems));
-        // Переходим на страницу корзины
-        window.location.href = 'cart.html';
+    function updateMainButton() {
+        const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
+            const buttonCountNumber = currentItem.querySelector('#buttonCountNumber');
+            const currentCount = buttonCountNumber ? parseInt(buttonCountNumber.textContent) || 0 : 0;
+            return total + currentCount;
+        }, 0);
+        
+        if (totalCount > 0) {
+            tg.MainButton.setText(`В корзину (${totalCount})`);
+            tg.MainButton.show();
+        } else {
+            tg.MainButton.hide();
+        }
+    }
+
+    function goToCart() {
+        const selectedItems = Array.from(document.querySelectorAll('.item'))
+            .map(item => {
+                const buttonCountNumber = item.querySelector('#buttonCountNumber');
+                const count = buttonCountNumber ? parseInt(buttonCountNumber.textContent) || 0 : 0;
+                const itemPriceText = item.querySelector('.product-price').textContent;
+                const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, ''));
+                
+                return {
+                    id: item.dataset.id,
+                    name: item.querySelector('.product-name').textContent,
+                    price: itemPrice,
+                    count: count
+                };
+            })
+            .filter(item => item.count > 0);
+
+        if (selectedItems.length > 0) {
+            // Сохраняем данные в localStorage для передачи на страницу корзины
+            localStorage.setItem('cartItems', JSON.stringify(selectedItems));
+            window.location.href = 'cart.html';
+        }
     }
 }
 
-// Обработка нажатия MainButton
-tg.MainButton.onClick(function() {
-    if (currentPage === 'index.html') {
-        goToCart();
-    } else if (currentPage === 'cart.html') {
-        // На странице cart.html обработка оплаты
-        alert("Переход к оплате!"); // Ваша логика оплаты
-    }
-});
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    setupButtons();
+// Логика для страницы корзины (заглушка)
+function initCartPage() {
+    // Загружаем товары из localStorage
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     
-    if (currentPage === 'index.html') {
-        initProducts();
+    if (cartItems.length === 0) {
+        // Если корзина пуста, показываем сообщение
+        document.body.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+        tg.MainButton.hide();
+    } else {
+        // Показываем товары в корзине
+        tg.MainButton.setText("Оплатить");
+        tg.MainButton.show();
         
-        // Проверяем, есть ли выбранные товары при загрузке
-        updateMainButton();
+        // Здесь можно добавить отображение товаров в корзине
+        console.log('Товары в корзине:', cartItems);
     }
-});
+}
+
+function processPayment() {
+    if (currentPage === 'cart.html') {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        
+        // Здесь должна быть логика оплаты
+        tg.showPopup({
+            title: 'Оплата',
+            message: `Сумма к оплате: ${totalAmount} руб.`,
+            buttons: [
+                {id: 'confirm', type: 'ok', text: 'Подтвердить'},
+                {id: 'cancel', type: 'cancel', text: 'Отмена'}
+            ]
+        }, (buttonId) => {
+            if (buttonId === 'confirm') {
+                // Обработка успешной оплаты
+                tg.showAlert('Заказ успешно оформлен!');
+                localStorage.removeItem('cartItems');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        });
+    }
+}
