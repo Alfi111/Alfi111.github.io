@@ -174,7 +174,7 @@ function initProductPage() {
         if (selectedItems.length > 0) {
             // Сохраняем данные в localStorage для передачи на страницу корзины
             localStorage.setItem('cartItems', JSON.stringify(selectedItems));
-            window.location.href = 'cart.html';
+            window.location.href = 'c22art.html';
         }
     }
 }
