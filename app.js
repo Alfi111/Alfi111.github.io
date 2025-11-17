@@ -239,22 +239,41 @@ function updateCartPage() {
             const itemTotal = item.price * item.count;
             totalAmount += itemTotal;
             
+            // Получаем эмодзи и описание для товара
+            const itemDetails = getItemDetails(item.id);
+            
             cartHTML += `
-                <div class="cart-item">
-                    <div>
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-details">${item.price}₽ × ${item.count}</div>
+                <div class="order-item">
+                    <div class="order-item-info">
+                        <div class="order-item-header">
+                            <span class="order-item-emoji">${itemDetails.emoji}</span>
+                            <span class="order-item-name">${item.name}</span>
+                            <span class="order-item-quantity">${item.count}x</span>
+                        </div>
+                        <div class="order-item-description">${itemDetails.description}</div>
                     </div>
-                    <div class="cart-item-total">${itemTotal}₽</div>
+                    <div class="order-item-price">${itemTotal}₽</div>
                 </div>
             `;
         });
         
         cartContainer.innerHTML = cartHTML;
-        totalContainer.textContent = `Итого: ${totalAmount}₽`;
+        totalContainer.textContent = `PAY ${totalAmount}₽`;
     }
     
     setupCartButton();
+}
+
+// Функция для получения деталей товара (эмодзи и описание)
+function getItemDetails(itemId) {
+    const itemDetails = {
+        '1': { emoji: '🍔', description: 'Сочный и вкусный' },
+        '2': { emoji: '🍕', description: 'That\'s amore' },
+        '3': { emoji: '🍣', description: 'Японское наслаждение' },
+        '4': { emoji: '🍱', description: 'Восточная гармония' }
+    };
+    
+    return itemDetails[itemId] || { emoji: '📦', description: 'Товар' };
 }
 
 function processPayment() {
