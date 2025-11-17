@@ -26,10 +26,16 @@ function setupTelegramButtons() {
         tg.MainButton.setParams({
             color: '#00D200' // Зеленый цвет
         });
-    } else {
+    } else if (currentPage === 'cart.html') {
+        // На странице корзины показываем кнопку "Назад" в header
         tg.BackButton.show();
         tg.BackButton.onClick(() => {
             window.history.back();
+        });
+        
+        // Настраиваем голубую кнопку оплаты
+        tg.MainButton.setParams({
+            color: '#2481cc' // Голубой цвет
         });
     }
 
@@ -40,6 +46,19 @@ function setupTelegramButtons() {
         } else if (currentPage === 'cart.html') {
             processPayment();
         }
+    });
+
+    // Обработчик закрытия приложения
+    tg.onEvent('viewportChanged', (event) => {
+        if (event.isStateStable && event.isExpanded === false) {
+            // Если приложение закрыто/свернуто, очищаем localStorage
+            localStorage.removeItem('cartItems');
+        }
+    });
+
+    // Также очищаем при полном закрытии
+    tg.onEvent('beforeUnload', () => {
+        localStorage.removeItem('cartItems');
     });
 }
 
@@ -223,23 +242,77 @@ function goToCart() {
     }
 }
 
-// Логика для страницы корзины (заглушка)
+// Логика для страницы корзины
 function initCartPage() {
     // Загружаем товары из localStorage
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     
     if (cartItems.length === 0) {
         // Если корзина пуста, показываем сообщение
-        document.body.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+        document.body.innerHTML = '<div class="empty-cart" style="text-align: center; padding: 50px 20px; color: var(--tg-theme-text-color);">Корзина пуста</div>';
         tg.MainButton.hide();
     } else {
-        // Показываем товары в корзине
-        tg.MainButton.setText("Оплатить");
-        tg.MainButton.show();
+        // Отображаем товары в корзине
+        displayCartItems(cartItems);
         
-        // Здесь можно добавить отображение товаров в корзине
-        console.log('Товары в корзине:', cartItems);
+        // Рассчитываем общую сумму
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        
+        // Устанавливаем голубую кнопку с общей суммой
+        tg.MainButton.setText(`Оплатить (${totalAmount}₽)`);
+        tg.MainButton.setParams({
+            color: '#2481cc' // Голубой цвет
+        });
+        tg.MainButton.show();
     }
+}
+
+// Функция отображения товаров в корзине
+function displayCartItems(cartItems) {
+    const cartContainer = document.createElement('div');
+    cartContainer.style.padding = '20px';
+    
+    let totalAmount = 0;
+    
+    cartItems.forEach(item => {
+        const itemTotal = item.price * item.count;
+        totalAmount += itemTotal;
+        
+        const itemElement = document.createElement('div');
+        itemElement.style.cssText = `
+            border-bottom: 1px solid var(--tg-theme-hint-color);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
+        
+        itemElement.innerHTML = `
+            <div style="flex: 1;">
+                <div style="font-weight: bold; color: var(--tg-theme-text-color);">${item.name}</div>
+                <div style="color: var(--tg-theme-hint-color); font-size: 14px;">${item.price}₽ × ${item.count}</div>
+            </div>
+            <div style="font-weight: bold; color: var(--tg-theme-text-color);">${itemTotal}₽</div>
+        `;
+        
+        cartContainer.appendChild(itemElement);
+    });
+    
+    // Добавляем общую сумму
+    const totalElement = document.createElement('div');
+    totalElement.style.cssText = `
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 2px solid var(--tg-theme-button-color);
+        text-align: right;
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--tg-theme-text-color);
+    `;
+    totalElement.textContent = `Итого: ${totalAmount}₽`;
+    
+    cartContainer.appendChild(totalElement);
+    document.body.appendChild(cartContainer);
 }
 
 function processPayment() {
