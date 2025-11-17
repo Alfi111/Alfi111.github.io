@@ -75,9 +75,28 @@
     <!-- Страница корзины -->
     <div id="page-cart" class="page" style="display: none;">
         <div class="cart-container">
-            <h2 class="cart-title">Корзина</h2>
-            <div id="cart-items"></div>
-            <div class="cart-total" id="cart-total"></div>
+            <div class="cart-header">
+                <h2 class="cart-title">YOUR ORDER</h2>
+                <button class="edit-button" onclick="showPage('index')">Edit</button>
+            </div>
+            
+            <div class="order-items" id="cart-items">
+                <!-- Товары будут добавляться сюда -->
+            </div>
+            
+            <div class="comment-section">
+                <div class="comment-header">
+                    <span class="comment-title">Add comment...</span>
+                </div>
+                <textarea 
+                    class="comment-input" 
+                    placeholder="Any special requests, details, final wishes etc."
+                ></textarea>
+            </div>
+            
+            <div class="cart-total-section">
+                <div class="total-amount" id="cart-total"></div>
+            </div>
         </div>
     </div>
     
