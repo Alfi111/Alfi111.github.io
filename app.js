@@ -1,249 +1,281 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-// Определяем текущую страницу
-const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-
-// Инициализация
+// Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
-    setupTelegramButtons();
-
-    if (currentPage === 'index.html') {
-        initProductPage();
-    } else if (currentPage === 'cart.html') {
-        initCartPage();
-    }
+    initApp();
 });
 
-/* ==============================
-   TELEGRAM BUTTONS FIXED
-================================ */
-function setupTelegramButtons() {
-
-    if (currentPage === 'index.html') {
-        tg.BackButton.hide();
-        tg.MainButton.hide();
-
-        tg.MainButton.setParams({
-            color: '#00D200'
-        });
-
-    } else if (currentPage === 'cart.html') {
-
-        tg.setHeaderColor('#2481cc');
-
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-            window.location.href = 'index.html';
-        });
-
-        tg.MainButton.setParams({
-            color: '#2481cc'
-        });
+function initApp() {
+    // Очищаем корзину при запуске (как в Telegram Mini App template)
+    if (!sessionStorage.getItem('sessionStarted')) {
+        localStorage.removeItem('cartItems');
+        sessionStorage.setItem('sessionStarted', 'true');
     }
 
-    // обработчик MainButton
+    setupTelegramButtons();
+    initProductPage();
+    
+    // Показываем главную страницу
+    showPage('index');
+}
+
+// Настройка Telegram кнопок
+function setupTelegramButtons() {
+    // Обработчик MainButton
     tg.MainButton.onClick(() => {
-        if (currentPage === 'index.html') {
+        const currentPage = getCurrentPage();
+        if (currentPage === 'index') {
             goToCart();
-        } else if (currentPage === 'cart.html') {
+        } else if (currentPage === 'cart') {
             processPayment();
         }
     });
 
-    /* -------------------------
-       ОЧИСТКА localStorage ПРАВИЛЬНАЯ
-       (Только при реальном закрытии WebApp)
-    ---------------------------- */
-
-    tg.onEvent('backButtonClicked', () => {
-        if (currentPage === 'index.html') {
-            localStorage.removeItem('cartItems');
+    // Обработчик BackButton
+    tg.BackButton.onClick(() => {
+        const currentPage = getCurrentPage();
+        if (currentPage === 'cart') {
+            showPage('index');
         }
     });
+}
 
-    // очищаем корзину только при запуске новой сессии WebApp
-    if (!sessionStorage.getItem('webapp-session')) {
-        localStorage.removeItem('cartItems');
-        sessionStorage.setItem('webapp-session', '1');
+// Навигация между страницами
+function showPage(pageName) {
+    // Скрываем все страницы
+    document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+    });
+    
+    // Показываем нужную страницу
+    document.getElementById(`page-${pageName}`).style.display = 'block';
+    
+    // Настраиваем Telegram кнопки для страницы
+    setupPageButtons(pageName);
+    
+    // Обновляем контент страницы если нужно
+    if (pageName === 'cart') {
+        updateCartPage();
     }
 }
 
-/* ==============================
-   INDEX.HTML LOGIC
-================================ */
+function setupPageButtons(pageName) {
+    if (pageName === 'index') {
+        tg.BackButton.hide();
+        updateMainButton();
+    } else if (pageName === 'cart') {
+        tg.BackButton.show();
+        setupCartButton();
+    }
+}
+
+function getCurrentPage() {
+    const indexPage = document.getElementById('page-index');
+    return indexPage.style.display !== 'none' ? 'index' : 'cart';
+}
+
+// Логика для страницы товаров
 function initProductPage() {
     const items = document.querySelectorAll('.item');
-
+    
+    // Восстанавливаем состояние из localStorage при загрузке
     restoreCartState();
-    updateMainButton();
 
-    items.forEach(item => {
+    items.forEach((item) => {
+        const buttonCountNumber = item.querySelector('.buttonCountNumber');
+        const btnSelect = item.querySelector('.btn-select');
+        const buttonCountPlus = item.querySelector('.plus');
+        const buttonCountMinus = item.querySelector('.minus');
+        const countButtons = item.querySelector('.count_btn');
+
         const itemId = item.dataset.id;
+        
+        // Восстанавливаем количество из localStorage
+        const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const savedItem = savedCartItems.find(i => i.id === itemId);
+        let count = savedItem ? savedItem.count : 0;
 
-        const numberBtn = item.querySelector('#buttonCountNumber');
-        const btnSelect = item.querySelector('#btn-select');
-        const plusBtn = item.querySelector('#buttonCountPlus');
-        const minusBtn = item.querySelector('#buttonCountMinus');
-        const countBlock = item.querySelector('.count_btn');
+        // Инициализируем отображение
+        updateItemDisplay();
 
-        let count = parseInt(numberBtn.textContent) || 0;
-
-        // --- кнопка "Выбрать"
+        // Обработчик для кнопки "Выбрать"
         btnSelect.addEventListener('click', () => {
             count = 1;
-            updateUI();
-        });
-
-        // --- "+"
-        plusBtn.addEventListener('click', () => {
-            count++;
-            updateUI();
-        });
-
-        // --- "-"
-        minusBtn.addEventListener('click', () => {
-            if (count > 1) count--;
-            else count = 0;
-            updateUI();
-        });
-
-        function updateUI() {
-            numberBtn.textContent = count;
-
-            numberBtn.style.display = count > 0 ? 'block' : 'none';
-            btnSelect.style.display = count === 0 ? 'inline-block' : 'none';
-            countBlock.style.display = count > 0 ? 'flex' : 'none';
-
-            saveCartState();
+            updateItemDisplay();
             updateMainButton();
+            saveCartState();
+        });
+
+        // Обработчик для кнопки "+"
+        buttonCountPlus.addEventListener('click', () => {
+            count++;
+            updateItemDisplay();
+            updateMainButton();
+            saveCartState();
+        });
+
+        // Обработчик для кнопки "-"
+        buttonCountMinus.addEventListener('click', () => {
+            if (count > 1) {
+                count--;
+            } else {
+                count = 0;
+            }
+            updateItemDisplay();
+            updateMainButton();
+            saveCartState();
+        });
+
+        function updateItemDisplay() {
+            buttonCountNumber.textContent = count;
+            buttonCountNumber.style.display = count > 0 ? 'block' : 'none';
+            btnSelect.style.display = count === 0 ? 'inline-block' : 'none';
+            countButtons.style.display = count > 0 ? 'block' : 'none';
+            buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none';
+            buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none';
         }
     });
+
+    updateMainButton();
 }
 
-/* ==============================
-   MAIN BUTTON UPDATE
-================================ */
+// Функция обновления главной кнопки
 function updateMainButton() {
-    const items = JSON.parse(localStorage.getItem('cartItems') || '[]');
-
-    const totalCount = items.reduce((sum, i) => sum + i.count, 0);
-
-    if (totalCount === 0) {
-        tg.MainButton.hide();
-    } else {
+    const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
+        const buttonCountNumber = currentItem.querySelector('.buttonCountNumber');
+        const currentCount = parseInt(buttonCountNumber.textContent) || 0;
+        return total + currentCount;
+    }, 0);
+    
+    if (totalCount > 0) {
         tg.MainButton.setText(`В корзину (${totalCount})`);
+        tg.MainButton.setParams({ color: '#00D200' });
         tg.MainButton.show();
+    } else {
+        tg.MainButton.hide();
     }
 }
 
-/* ==============================
-   SAVE / RESTORE CART
-================================ */
+// Настройка кнопки корзины
+function setupCartButton() {
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    if (cartItems.length > 0) {
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
+        tg.MainButton.setParams({ color: '#2481cc' });
+        tg.MainButton.show();
+    } else {
+        tg.MainButton.hide();
+    }
+}
+
+// Функция сохранения состояния корзины
 function saveCartState() {
     const selectedItems = Array.from(document.querySelectorAll('.item'))
         .map(item => {
-            const count = parseInt(item.querySelector('#buttonCountNumber').textContent) || 0;
-            if (count === 0) return null;
-
-            const price = parseInt(item.querySelector('.product-price').textContent.replace(/[^\d]/g, ''));
-
+            const buttonCountNumber = item.querySelector('.buttonCountNumber');
+            const count = parseInt(buttonCountNumber.textContent) || 0;
+            const itemPriceText = item.querySelector('.product-price').textContent;
+            const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, ''));
+            
             return {
                 id: item.dataset.id,
                 name: item.querySelector('.product-name').textContent,
-                price: price,
+                price: itemPrice,
                 count: count
             };
         })
-        .filter(i => i !== null);
+        .filter(item => item.count > 0);
 
     localStorage.setItem('cartItems', JSON.stringify(selectedItems));
 }
 
+// Функция восстановления состояния корзины
 function restoreCartState() {
-    const saved = JSON.parse(localStorage.getItem('cartItems') || '[]');
-
-    saved.forEach(savedItem => {
+    const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    savedCartItems.forEach(savedItem => {
         const item = document.querySelector(`.item[data-id="${savedItem.id}"]`);
-        if (!item) return;
-
-        const numberBtn = item.querySelector('#buttonCountNumber');
-        const btnSelect = item.querySelector('#btn-select');
-        const countBlock = item.querySelector('.count_btn');
-
-        numberBtn.textContent = savedItem.count;
-        numberBtn.style.display = 'block';
-        btnSelect.style.display = 'none';
-        countBlock.style.display = 'flex';
+        if (item) {
+            const buttonCountNumber = item.querySelector('.buttonCountNumber');
+            const btnSelect = item.querySelector('.btn-select');
+            const buttonCountPlus = item.querySelector('.plus');
+            const buttonCountMinus = item.querySelector('.minus');
+            const countButtons = item.querySelector('.count_btn');
+            
+            buttonCountNumber.textContent = savedItem.count;
+            buttonCountNumber.style.display = 'block';
+            btnSelect.style.display = 'none';
+            countButtons.style.display = 'block';
+            buttonCountPlus.style.display = 'inline-block';
+            buttonCountMinus.style.display = 'inline-block';
+        }
     });
 }
 
-/* ==============================
-   CART PAGE LOGIC
-================================ */
+// Функция перехода в корзину
 function goToCart() {
-    window.location.href = 'cart.html';
+    saveCartState();
+    showPage('cart');
 }
 
-function initCartPage() {
+// Обновление страницы корзины
+function updateCartPage() {
+    const cartContainer = document.getElementById('cart-items');
+    const totalContainer = document.getElementById('cart-total');
+    
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-
+    
     if (cartItems.length === 0) {
-        document.body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--tg-theme-text-color)">Корзина пуста</div>';
-        tg.MainButton.hide();
-        return;
+        cartContainer.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+        totalContainer.innerHTML = '';
+    } else {
+        let totalAmount = 0;
+        let cartHTML = '';
+        
+        cartItems.forEach(item => {
+            const itemTotal = item.price * item.count;
+            totalAmount += itemTotal;
+            
+            cartHTML += `
+                <div class="cart-item">
+                    <div>
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-details">${item.price}₽ × ${item.count}</div>
+                    </div>
+                    <div class="cart-item-total">${itemTotal}₽</div>
+                </div>
+            `;
+        });
+        
+        cartContainer.innerHTML = cartHTML;
+        totalContainer.textContent = `Итого: ${totalAmount}₽`;
     }
-
-    displayCartItems(cartItems);
-
-    const totalAmount = cartItems.reduce((sum, i) => sum + i.count * i.price, 0);
-    tg.MainButton.setText(`Оплатить ${totalAmount} ₽`);
-    tg.MainButton.show();
+    
+    setupCartButton();
 }
 
-function displayCartItems(items) {
-    const container = document.createElement('div');
-    container.style.padding = '20px';
-
-    items.forEach(i => {
-        const element = document.createElement('div');
-        element.style.cssText =
-            "border-bottom:1px solid var(--tg-theme-hint-color);padding:15px 0;display:flex;justify-content:space-between;";
-
-        element.innerHTML = `
-            <div>
-                <div style="font-weight:bold">${i.name}</div>
-                <div style="color:var(--tg-theme-hint-color)">${i.price} ₽ × ${i.count}</div>
-            </div>
-            <div style="font-weight:bold">${i.price * i.count} ₽</div>
-        `;
-
-        container.appendChild(element);
-    });
-
-    document.body.innerHTML = "";
-    document.body.appendChild(container);
-}
-
-/* ==============================
-   PAYMENT
-================================ */
 function processPayment() {
-    const items = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    const totalAmount = items.reduce((sum, i) => sum + i.price * i.count, 0);
-
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+    
     tg.showPopup({
-        title: "Оплата",
-        message: `Сумма к оплате: ${totalAmount} ₽`,
+        title: 'Оплата',
+        message: `Сумма к оплате: ${totalAmount} руб.`,
         buttons: [
-            { id: "confirm", type: "ok", text: "Подтвердить" },
-            { id: "cancel", type: "cancel", text: "Отмена" }
+            {id: 'confirm', type: 'ok', text: 'Подтвердить'},
+            {id: 'cancel', type: 'cancel', text: 'Отмена'}
         ]
-    }, id => {
-        if (id === "confirm") {
-            tg.showAlert("Оплата прошла успешно 👍");
+    }, (buttonId) => {
+        if (buttonId === 'confirm') {
+            tg.showAlert('Заказ успешно оформлен!');
             localStorage.removeItem('cartItems');
-            setTimeout(() => window.location.href = "index.html", 1200);
+            setTimeout(() => {
+                showPage('index');
+                initProductPage(); // Переинициализируем товары
+            }, 2000);
         }
     });
 }
