@@ -1,10 +1,26 @@
 let tg = window.Telegram.WebApp;
-tg.expand(); // Разворачиваем приложение
+tg.expand();
+
+// Устанавливаем заголовок для страницы корзины
+if (window.location.pathname.includes('cart.html')) {
+    tg.setHeaderColor('#2481cc');
+}
 
 // Определяем текущую страницу
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
-// Функция для проверки и управления кнопками
+// Инициализация приложения
+document.addEventListener('DOMContentLoaded', () => {
+    setupButtons();
+    
+    if (currentPage === 'index.html') {
+        initProductPage();
+    } else if (currentPage === 'cart.html') {
+        initCartPage();
+    }
+});
+
+// Настройка Telegram кнопок
 function setupButtons() {
     if (currentPage === 'index.html') {
         // На главной странице скрываем кнопку "Назад"
@@ -13,13 +29,17 @@ function setupButtons() {
         
         // Настраиваем зеленую кнопку
         tg.MainButton.setParams({
-            color: '#00D200' // Зеленый цвет
+            color: '#00D200'
         });
-    } else if (currentPage === 'cart.html') {
+    }
+    if (currentPage === 'cart.html') {
         // На странице корзины показываем кнопку "Назад"
         tg.BackButton.show();
-        tg.MainButton.setText("Оплатить");
-        tg.MainButton.show();
+        
+        // Настраиваем голубую кнопку оплаты
+        tg.MainButton.setParams({
+            color: '#2481cc'
+        });
     }
 
     tg.onEvent("backButtonClicked", () => {
@@ -27,42 +47,91 @@ function setupButtons() {
             window.history.back(); // Возврат на предыдущую страницу
         }
     });
+
+    // Меняем текст MainButton на странице cart.html
+    if (currentPage === 'cart.html') {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        if (cartItems.length > 0) {
+            const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+            tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
+            tg.MainButton.show();
+        }
+    }
+
+    // Обработчик MainButton
+    tg.MainButton.onClick(() => {
+        if (currentPage === 'index.html') {
+            goToCart();
+        } else if (currentPage === 'cart.html') {
+            processPayment();
+        }
+    });
+
+    // Обработчик закрытия приложения - только при полном закрытии
+    let isAppClosing = false;
+    
+    tg.onEvent('viewportChanged', (event) => {
+        // Очищаем только при явном закрытии приложения
+        if (event.isStateStable && !event.isExpanded) {
+            isAppClosing = true;
+            setTimeout(() => {
+                if (isAppClosing) {
+                    localStorage.removeItem('cartItems');
+                }
+            }, 1000);
+        } else {
+            isAppClosing = false;
+        }
+    });
+
+    // Восстанавливаем флаг при разворачивании
+    tg.onEvent('themeChanged', () => {
+        isAppClosing = false;
+    });
 }
 
-// Основная логика работы с товарами
-function initProducts() {
+// Логика для страницы товаров
+function initProductPage() {
     const items = document.querySelectorAll('.item');
+    
+    // Восстанавливаем состояние из localStorage при загрузке
+    restoreCartState();
 
     items.forEach((item, index) => {
-        // Получаем элементы по ID, но добавляем индекс для уникальности
+        // Получаем элементы с учетом дублирующихся ID
         const buttonCountNumber = item.querySelector('#buttonCountNumber');
         const btnSelect = item.querySelector('#btn-select');
         const buttonCountPlus = item.querySelector('#buttonCountPlus');
         const buttonCountMinus = item.querySelector('#buttonCountMinus');
-        const countBtn = item.querySelector('.count_btn');
+        const countButtons = item.querySelector('.count_btn');
 
-        let count = 0;
+        const itemId = item.dataset.id;
+        
+        // Восстанавливаем количество из localStorage
+        const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const savedItem = savedCartItems.find(i => i.id === itemId);
+        let count = savedItem ? savedItem.count : 0;
 
-        // Скрываем кнопки + и - по умолчанию
-        if (buttonCountPlus) buttonCountPlus.style.display = 'none';
-        if (buttonCountMinus) buttonCountMinus.style.display = 'none';
-        if (countBtn) countBtn.style.display = 'none';
+        // Инициализируем отображение
+        updateItemDisplay();
 
         // Обработчик для кнопки "Выбрать"
         if (btnSelect) {
             btnSelect.addEventListener('click', () => {
-                count = 1; // Устанавливаем счетчик на 1
-                updateDisplay();
+                count = 1;
+                updateItemDisplay();
                 updateMainButton();
+                saveCartState();
             });
         }
 
         // Обработчик для кнопки "+"
         if (buttonCountPlus) {
             buttonCountPlus.addEventListener('click', () => {
-                count++; // Увеличиваем счетчик
-                updateDisplay();
+                count++;
+                updateItemDisplay();
                 updateMainButton();
+                saveCartState();
             });
         }
 
@@ -70,54 +139,50 @@ function initProducts() {
         if (buttonCountMinus) {
             buttonCountMinus.addEventListener('click', () => {
                 if (count > 1) {
-                    count--; // Уменьшаем счетчик, если он больше 1
-                } else if (count === 1) {
-                    count = 0; // Сбрасываем счетчик
+                    count--;
+                } else {
+                    count = 0;
                 }
-                updateDisplay();
+                updateItemDisplay();
                 updateMainButton();
+                saveCartState();
             });
         }
 
-        // Функция обновления отображения
-        function updateDisplay() {
+        function updateItemDisplay() {
+            // Обновляем отображение счетчика
             if (buttonCountNumber) {
-                buttonCountNumber.textContent = count > 0 ? count : ''; // Обновляем текст счетчика
-                buttonCountNumber.style.display = count > 0 ? 'block' : 'none'; // Показываем или скрываем счетчик
+                buttonCountNumber.textContent = count;
+                buttonCountNumber.style.display = count > 0 ? 'block' : 'none';
             }
             
+            // Управляем видимостью кнопок
             if (btnSelect) {
-                btnSelect.style.display = count === 0 ? 'inline-block' : 'none'; // Показываем кнопку "Выбрать", если счетчик 0
+                btnSelect.style.display = count === 0 ? 'inline-block' : 'none';
             }
-            
+            if (countButtons) {
+                countButtons.style.display = count > 0 ? 'block' : 'none';
+            }
             if (buttonCountPlus) {
-                buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "+"
+                buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none';
             }
-            
             if (buttonCountMinus) {
-                buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "-"
-            }
-            
-            if (countBtn) {
-                countBtn.style.display = count > 0 ? 'block' : 'none'; // Показываем контейнер кнопок
+                buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none';
             }
         }
     });
+
+    updateMainButton();
 }
 
 // Функция обновления главной кнопки
 function updateMainButton() {
-    const items = document.querySelectorAll('.item');
-    let totalCount = 0;
-
-    items.forEach(item => {
-        const buttonCountNumber = item.querySelector('#buttonCountNumber');
-        if (buttonCountNumber) {
-            const currentCount = parseInt(buttonCountNumber.textContent) || 0;
-            totalCount += currentCount;
-        }
-    });
-
+    const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
+        const buttonCountNumber = currentItem.querySelector('#buttonCountNumber');
+        const currentCount = buttonCountNumber ? parseInt(buttonCountNumber.textContent) || 0 : 0;
+        return total + currentCount;
+    }, 0);
+    
     if (totalCount > 0) {
         tg.MainButton.setText(`В корзину (${totalCount})`);
         tg.MainButton.show();
@@ -126,52 +191,183 @@ function updateMainButton() {
     }
 }
 
-// Функция перехода в корзину
-function goToCart() {
-    const items = document.querySelectorAll('.item');
-    const selectedItems = [];
+// Функция сохранения состояния корзины
+function saveCartState() {
+    const selectedItems = Array.from(document.querySelectorAll('.item'))
+        .map(item => {
+            const buttonCountNumber = item.querySelector('#buttonCountNumber');
+            const count = buttonCountNumber ? parseInt(buttonCountNumber.textContent) || 0 : 0;
+            const itemPriceText = item.querySelector('.product-price').textContent;
+            const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, ''));
+            
+            return {
+                id: item.dataset.id,
+                name: item.querySelector('.product-name').textContent,
+                price: itemPrice,
+                count: count
+            };
+        })
+        .filter(item => item.count > 0);
 
-    items.forEach(item => {
-        const buttonCountNumber = item.querySelector('#buttonCountNumber');
-        if (buttonCountNumber) {
-            const count = parseInt(buttonCountNumber.textContent) || 0;
-            if (count > 0) {
-                selectedItems.push({
-                    id: item.dataset.id,
-                    name: item.querySelector('.product-name').textContent,
-                    price: item.querySelector('.product-price').textContent,
-                    count: count
-                });
+    localStorage.setItem('cartItems', JSON.stringify(selectedItems));
+}
+
+// Функция восстановления состояния корзины
+function restoreCartState() {
+    const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    savedCartItems.forEach(savedItem => {
+        const item = document.querySelector(`.item[data-id="${savedItem.id}"]`);
+        if (item) {
+            const buttonCountNumber = item.querySelector('#buttonCountNumber');
+            const btnSelect = item.querySelector('#btn-select');
+            const buttonCountPlus = item.querySelector('#buttonCountPlus');
+            const buttonCountMinus = item.querySelector('#buttonCountMinus');
+            const countButtons = item.querySelector('.count_btn');
+            
+            if (buttonCountNumber) {
+                buttonCountNumber.textContent = savedItem.count;
+                buttonCountNumber.style.display = 'block';
+            }
+            if (btnSelect) {
+                btnSelect.style.display = 'none';
+            }
+            if (countButtons) {
+                countButtons.style.display = 'block';
+            }
+            if (buttonCountPlus) {
+                buttonCountPlus.style.display = 'inline-block';
+            }
+            if (buttonCountMinus) {
+                buttonCountMinus.style.display = 'inline-block';
             }
         }
     });
+}
+
+// Функция перехода в корзину
+function goToCart() {
+    const selectedItems = Array.from(document.querySelectorAll('.item'))
+        .map(item => {
+            const buttonCountNumber = item.querySelector('#buttonCountNumber');
+            const count = buttonCountNumber ? parseInt(buttonCountNumber.textContent) || 0 : 0;
+            const itemPriceText = item.querySelector('.product-price').textContent;
+            const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, ''));
+            
+            return {
+                id: item.dataset.id,
+                name: item.querySelector('.product-name').textContent,
+                price: itemPrice,
+                count: count
+            };
+        })
+        .filter(item => item.count > 0);
 
     if (selectedItems.length > 0) {
-        // Сохраняем данные в localStorage
         localStorage.setItem('cartItems', JSON.stringify(selectedItems));
-        // Переходим на страницу корзины
         window.location.href = 'cart.html';
     }
 }
 
-// Обработка нажатия MainButton
-tg.MainButton.onClick(function() {
-    if (currentPage === 'index.html') {
-        goToCart();
-    } else if (currentPage === 'cart.html') {
-        // На странице cart.html обработка оплаты
-        alert("Переход к оплате!"); // Ваша логика оплаты
-    }
-});
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    setupButtons();
+// Логика для страницы корзины
+function initCartPage() {
+    // Устанавливаем заголовок "Корзина"
+    tg.setHeaderColor('#2481cc');
     
-    if (currentPage === 'index.html') {
-        initProducts();
-        
-        // Проверяем, есть ли выбранные товары при загрузке
-        updateMainButton();
+    // Загружаем товары из localStorage
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    if (cartItems.length === 0) {
+        // Если корзина пуста, показываем сообщение
+        document.body.innerHTML = '<div class="empty-cart" style="text-align: center; padding: 50px 20px; color: var(--tg-theme-text-color);">Корзина пуста</div>';
+    } else {
+        // Отображаем товары в корзине
+        displayCartItems(cartItems);
     }
-});
+}
+
+// Функция отображения товаров в корзине
+function displayCartItems(cartItems) {
+    // Очищаем body и добавляем контейнер
+    document.body.innerHTML = '';
+    const cartContainer = document.createElement('div');
+    cartContainer.style.padding = '20px';
+    
+    let totalAmount = 0;
+    
+    // Добавляем заголовок
+    const title = document.createElement('h2');
+    title.textContent = 'Корзина';
+    title.style.cssText = `
+        color: var(--tg-theme-text-color);
+        margin-bottom: 20px;
+        text-align: center;
+    `;
+    cartContainer.appendChild(title);
+    
+    cartItems.forEach(item => {
+        const itemTotal = item.price * item.count;
+        totalAmount += itemTotal;
+        
+        const itemElement = document.createElement('div');
+        itemElement.style.cssText = `
+            border-bottom: 1px solid var(--tg-theme-hint-color);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
+        
+        itemElement.innerHTML = `
+            <div style="flex: 1;">
+                <div style="font-weight: bold; color: var(--tg-theme-text-color);">${item.name}</div>
+                <div style="color: var(--tg-theme-hint-color); font-size: 14px;">${item.price}₽ × ${item.count}</div>
+            </div>
+            <div style="font-weight: bold; color: var(--tg-theme-text-color);">${itemTotal}₽</div>
+        `;
+        
+        cartContainer.appendChild(itemElement);
+    });
+    
+    // Добавляем общую сумму
+    const totalElement = document.createElement('div');
+    totalElement.style.cssText = `
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 2px solid var(--tg-theme-button-color);
+        text-align: right;
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--tg-theme-text-color);
+    `;
+    totalElement.textContent = `Итого: ${totalAmount}₽`;
+    
+    cartContainer.appendChild(totalElement);
+    document.body.appendChild(cartContainer);
+}
+
+function processPayment() {
+    if (currentPage === 'cart.html') {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        
+        // Здесь должна быть логика оплаты
+        tg.showPopup({
+            title: 'Оплата',
+            message: `Сумма к оплате: ${totalAmount} руб.`,
+            buttons: [
+                {id: 'confirm', type: 'ok', text: 'Подтвердить'},
+                {id: 'cancel', type: 'cancel', text: 'Отмена'}
+            ]
+        }, (buttonId) => {
+            if (buttonId === 'confirm') {
+                // Обработка успешной оплаты
+                tg.showAlert('Заказ успешно оформлен!');
+                localStorage.removeItem('cartItems');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        });
+    }
+}
