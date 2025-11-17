@@ -1,20 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-	<link rel="stylesheet" href="style.css">
-	<title>Магазин</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            padding: 20px;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+        }
+        .cart-item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
+    <h2>Ваша корзина</h2>
+    <div id="cart-items"></div>
+    <div class="total" id="total-price"></div>
 
-	<div class="container">
-		<div class="usercard" id="usercard"></div>
-	</div>
-	<div class="usercard" id="usercard"></div>
-	
-	<script src="https://telegram.org/js/telegram-web-app.js"></script>
-	<script src="app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Загружаем товары из localStorage
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const cartContainer = document.getElementById('cart-items');
+        const totalPrice = document.getElementById('total-price');
+        
+        let total = 0;
+        
+        if (cartItems.length === 0) {
+            cartContainer.innerHTML = '<p>Корзина пуста</p>';
+        } else {
+            cartItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <strong>${item.name}</strong><br>
+                    Количество: ${item.count}<br>
+                    Цена: ${item.price} × ${item.count} = ${parseInt(item.price) * item.count} руб.
+                `;
+                cartContainer.appendChild(itemElement);
+                
+                total += parseInt(item.price) * item.count;
+            });
+            
+            totalPrice.textContent = `Общая сумма: ${total} руб.`;
+        }
+    </script>
 </body>
 </html>
