@@ -137,7 +137,7 @@ body {
 /* Стили для корзины */
 .cart-container {
     width: 100%;
-    margin: 0 auto;
+    margin: 0 15px 0 15px;
 }
 
 .cart-header {
@@ -183,7 +183,6 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     padding: 12px 0;
-    margin-bottom: 10px;
 }
 
 .order-item:last-child {
@@ -240,13 +239,10 @@ body {
 .comment-section {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
     padding: 20px;
+    margin-top: 10px;
     margin-bottom: 0;
     width: 100%;
     border-radius: 0;
-}
-
-.comment-header {
-    margin-bottom: 12px;
 }
 
 .comment-title {
