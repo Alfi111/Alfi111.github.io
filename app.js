@@ -263,7 +263,7 @@ function updateCartPage() {
 function getItemDetails(itemId) {
     const itemDetails = {
         '1': { emoji: '🍔', description: 'Сочный и вкусный' },
-        '2': { emoji: '🍕', description: 'That\'s amore' },
+        '2': { emoji: '🍕', description: 'Итальянская пикантная колбаса, моцарелла, спелые томаты, хрустящее тесто' },
         '3': { emoji: '🍣', description: 'Японское наслаждение' },
         '4': { emoji: '🍱', description: 'Восточная гармония' }
     };
