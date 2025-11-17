@@ -46,7 +46,9 @@ function setupTelegramButtons() {
 // Логика для страницы товаров
 function initProductPage() {
     const items = document.querySelectorAll('.item');
-    let selectedItems = [];
+    
+    // Загружаем сохраненные товары из localStorage
+    loadSavedItems();
 
     items.forEach((item, index) => {
         // Получаем элементы с учетом дублирующихся ID
@@ -58,10 +60,15 @@ function initProductPage() {
 
         let count = 0;
 
-        // Скрываем элементы управления количеством
-        if (buttonCountPlus) buttonCountPlus.style.display = 'none';
-        if (buttonCountMinus) buttonCountMinus.style.display = 'none';
-        if (countButtons) countButtons.style.display = 'none';
+        // Загружаем сохраненное количество для этого товара
+        const savedItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const savedItem = savedItems.find(i => i.id === item.dataset.id);
+        if (savedItem) {
+            count = savedItem.count;
+        }
+
+        // Инициализируем отображение
+        updateItemDisplay();
 
         // Обработчик для кнопки "Выбрать"
         if (btnSelect) {
@@ -125,17 +132,20 @@ function initProductPage() {
             const itemPriceText = item.querySelector('.product-price').textContent;
             const itemPrice = parseInt(itemPriceText.replace(/[^\d]/g, '')); // Убираем все нецифровые символы
             
-            // Обновляем массив выбранных товаров
-            selectedItems = selectedItems.filter(i => i.id !== itemId);
+            // Сохраняем в localStorage
+            const savedItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+            const updatedItems = savedItems.filter(i => i.id !== itemId);
             
             if (count > 0) {
-                selectedItems.push({
+                updatedItems.push({
                     id: itemId,
                     name: itemName,
                     price: itemPrice,
                     count: count
                 });
             }
+            
+            localStorage.setItem('cartItems', JSON.stringify(updatedItems));
         }
     });
 
@@ -152,6 +162,42 @@ function initProductPage() {
         } else {
             tg.MainButton.hide();
         }
+    }
+
+    // Функция загрузки сохраненных товаров
+    function loadSavedItems() {
+        const savedItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        const items = document.querySelectorAll('.item');
+        
+        savedItems.forEach(savedItem => {
+            const item = Array.from(items).find(i => i.dataset.id === savedItem.id);
+            if (item) {
+                const buttonCountNumber = item.querySelector('#buttonCountNumber');
+                const btnSelect = item.querySelector('#btn-select');
+                const buttonCountPlus = item.querySelector('#buttonCountPlus');
+                const buttonCountMinus = item.querySelector('#buttonCountMinus');
+                const countButtons = item.querySelector('.count_btn');
+                
+                if (buttonCountNumber) {
+                    buttonCountNumber.textContent = savedItem.count;
+                    buttonCountNumber.style.display = 'block';
+                }
+                if (btnSelect) {
+                    btnSelect.style.display = 'none';
+                }
+                if (countButtons) {
+                    countButtons.style.display = 'block';
+                }
+                if (buttonCountPlus) {
+                    buttonCountPlus.style.display = 'inline-block';
+                }
+                if (buttonCountMinus) {
+                    buttonCountMinus.style.display = 'inline-block';
+                }
+            }
+        });
+        
+        updateMainButton();
     }
 
     function goToCart() {
@@ -175,27 +221,60 @@ function initProductPage() {
             // Сохраняем данные в localStorage для передачи на страницу корзины
             localStorage.setItem('cartItems', JSON.stringify(selectedItems));
             window.location.href = 'cart.html';
+        } else {
+            tg.showAlert('Выберите хотя бы один товар!');
         }
     }
 }
 
-// Логика для страницы корзины (заглушка)
+// Логика для страницы корзины
 function initCartPage() {
     // Загружаем товары из localStorage
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
     
     if (cartItems.length === 0) {
         // Если корзина пуста, показываем сообщение
-        document.body.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+        document.body.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--tg-theme-text-color);">Корзина пуста</div>';
         tg.MainButton.hide();
     } else {
         // Показываем товары в корзине
         tg.MainButton.setText("Оплатить");
         tg.MainButton.show();
         
-        // Здесь можно добавить отображение товаров в корзине
-        console.log('Товары в корзине:', cartItems);
+        // Отображаем товары в корзине
+        displayCartItems(cartItems);
     }
+}
+
+// Функция отображения товаров в корзине
+function displayCartItems(cartItems) {
+    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+    
+    const cartHTML = `
+        <div style="padding: 20px;">
+            <h2 style="text-align: center; color: var(--tg-theme-text-color);">Ваша корзина</h2>
+            <div id="cart-items">
+                ${cartItems.map(item => `
+                    <div style="border-bottom: 1px solid var(--tg-theme-hint-color); padding: 15px 0;">
+                        <div style="font-weight: bold; color: var(--tg-theme-text-color);">${item.name}</div>
+                        <div style="color: var(--tg-theme-text-color); margin: 5px 0;">
+                            Количество: ${item.count} шт.
+                        </div>
+                        <div style="color: var(--tg-theme-text-color);">
+                            Цена: ${item.price} ₽ × ${item.count} = ${item.price * item.count} ₽
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: var(--tg-theme-secondary-bg-color); border-radius: 10px;">
+                <div style="font-weight: bold; font-size: 18px; color: var(--tg-theme-text-color); text-align: center;">
+                    Общая сумма: ${totalAmount} ₽
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.innerHTML = cartHTML;
 }
 
 function processPayment() {
