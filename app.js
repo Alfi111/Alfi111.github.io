@@ -4,6 +4,9 @@ tg.expand();
 // Устанавливаем заголовок для страницы корзины
 if (window.location.pathname.includes('cart.html')) {
     tg.setHeaderColor('#2481cc');
+    tg.MainButton.setParams({
+        color: '#2481cc'
+    });
 }
 
 // Определяем текущую страницу
@@ -11,7 +14,7 @@ const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
-    setupButtons();
+    setupTelegramButtons();
     
     if (currentPage === 'index.html') {
         initProductPage();
@@ -21,41 +24,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Настройка Telegram кнопок
-function setupButtons() {
+function setupTelegramButtons() {
+    // Скрываем кнопку "Назад" на главной странице
     if (currentPage === 'index.html') {
-        // На главной странице скрываем кнопку "Назад"
         tg.BackButton.hide();
-        tg.MainButton.hide(); // Скрываем MainButton по умолчанию
+        tg.MainButton.hide();
         
         // Настраиваем зеленую кнопку
         tg.MainButton.setParams({
             color: '#00D200'
         });
-    }
-    if (currentPage === 'cart.html') {
-        // На странице корзины показываем кнопку "Назад"
+    } else if (currentPage === 'cart.html') {
+        // Устанавливаем заголовок "Корзина"
+        tg.setHeaderColor('#2481cc');
+        
+        // Показываем кнопку "Назад" в header
         tg.BackButton.show();
+        tg.BackButton.onClick(() => {
+            window.location.href = 'index.html';
+        });
         
         // Настраиваем голубую кнопку оплаты
         tg.MainButton.setParams({
             color: '#2481cc'
         });
-    }
-
-    tg.onEvent("backButtonClicked", () => {
-        if (currentPage !== 'index.html') {
-            window.history.back(); // Возврат на предыдущую страницу
-        }
-    });
-
-    // Меняем текст MainButton на странице cart.html
-    if (currentPage === 'cart.html') {
-        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-        if (cartItems.length > 0) {
-            const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
-            tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
-            tg.MainButton.show();
-        }
     }
 
     // Обработчик MainButton
@@ -71,12 +63,14 @@ function setupButtons() {
     let isAppClosing = false;
     
     tg.onEvent('viewportChanged', (event) => {
+        console.log('Viewport changed:', event);
         // Очищаем только при явном закрытии приложения
         if (event.isStateStable && !event.isExpanded) {
             isAppClosing = true;
             setTimeout(() => {
                 if (isAppClosing) {
                     localStorage.removeItem('cartItems');
+                    console.log('LocalStorage очищен при закрытии приложения');
                 }
             }, 1000);
         } else {
@@ -210,11 +204,13 @@ function saveCartState() {
         .filter(item => item.count > 0);
 
     localStorage.setItem('cartItems', JSON.stringify(selectedItems));
+    console.log('Cart saved:', selectedItems);
 }
 
 // Функция восстановления состояния корзины
 function restoreCartState() {
     const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    console.log('Restoring cart:', savedCartItems);
     
     savedCartItems.forEach(savedItem => {
         const item = document.querySelector(`.item[data-id="${savedItem.id}"]`);
@@ -264,6 +260,7 @@ function goToCart() {
         .filter(item => item.count > 0);
 
     if (selectedItems.length > 0) {
+        console.log('Going to cart with items:', selectedItems);
         localStorage.setItem('cartItems', JSON.stringify(selectedItems));
         window.location.href = 'cart.html';
     }
@@ -271,18 +268,38 @@ function goToCart() {
 
 // Логика для страницы корзины
 function initCartPage() {
+    console.log('Initializing cart page');
+    
     // Устанавливаем заголовок "Корзина"
     tg.setHeaderColor('#2481cc');
     
+    // Показываем кнопку "Назад" сразу
+    tg.BackButton.show();
+    tg.BackButton.onClick(() => {
+        window.location.href = 'index.html';
+    });
+
     // Загружаем товары из localStorage
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    console.log('Cart items loaded:', cartItems);
     
     if (cartItems.length === 0) {
         // Если корзина пуста, показываем сообщение
         document.body.innerHTML = '<div class="empty-cart" style="text-align: center; padding: 50px 20px; color: var(--tg-theme-text-color);">Корзина пуста</div>';
+        tg.MainButton.hide();
     } else {
         // Отображаем товары в корзине
         displayCartItems(cartItems);
+        
+        // Рассчитываем общую сумму
+        const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+        
+        // Устанавливаем голубую кнопку с общей суммой
+        tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
+        tg.MainButton.setParams({
+            color: '#2481cc'
+        });
+        tg.MainButton.show();
     }
 }
 
