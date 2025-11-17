@@ -33,7 +33,8 @@ function setupButtons() {
 function initProducts() {
     const items = document.querySelectorAll('.item');
 
-    items.forEach(item => {
+    items.forEach((item, index) => {
+        // Получаем элементы по ID, но добавляем индекс для уникальности
         const buttonCountNumber = item.querySelector('#buttonCountNumber');
         const btnSelect = item.querySelector('#btn-select');
         const buttonCountPlus = item.querySelector('#buttonCountPlus');
@@ -43,54 +44,79 @@ function initProducts() {
         let count = 0;
 
         // Скрываем кнопки + и - по умолчанию
-        buttonCountPlus.style.display = 'none';
-        buttonCountMinus.style.display = 'none';
-        countBtn.style.display = 'none';
+        if (buttonCountPlus) buttonCountPlus.style.display = 'none';
+        if (buttonCountMinus) buttonCountMinus.style.display = 'none';
+        if (countBtn) countBtn.style.display = 'none';
 
         // Обработчик для кнопки "Выбрать"
-        btnSelect.addEventListener('click', () => {
-            count = 1; // Устанавливаем счетчик на 1
-            updateDisplay();
-            updateMainButton();
-        });
+        if (btnSelect) {
+            btnSelect.addEventListener('click', () => {
+                count = 1; // Устанавливаем счетчик на 1
+                updateDisplay();
+                updateMainButton();
+            });
+        }
 
         // Обработчик для кнопки "+"
-        buttonCountPlus.addEventListener('click', () => {
-            count++; // Увеличиваем счетчик
-            updateDisplay();
-            updateMainButton();
-        });
+        if (buttonCountPlus) {
+            buttonCountPlus.addEventListener('click', () => {
+                count++; // Увеличиваем счетчик
+                updateDisplay();
+                updateMainButton();
+            });
+        }
 
         // Обработчик для кнопки "-"
-        buttonCountMinus.addEventListener('click', () => {
-            if (count > 1) {
-                count--; // Уменьшаем счетчик, если он больше 1
-            } else if (count === 1) {
-                count = 0; // Сбрасываем счетчик
-            }
-            updateDisplay();
-            updateMainButton();
-        });
+        if (buttonCountMinus) {
+            buttonCountMinus.addEventListener('click', () => {
+                if (count > 1) {
+                    count--; // Уменьшаем счетчик, если он больше 1
+                } else if (count === 1) {
+                    count = 0; // Сбрасываем счетчик
+                }
+                updateDisplay();
+                updateMainButton();
+            });
+        }
 
         // Функция обновления отображения
         function updateDisplay() {
-            buttonCountNumber.textContent = count > 0 ? count : ''; // Обновляем текст счетчика
-            buttonCountNumber.style.display = count > 0 ? 'block' : 'none'; // Показываем или скрываем счетчик
-            btnSelect.style.display = count === 0 ? 'inline-block' : 'none'; // Показываем кнопку "Выбрать", если счетчик 0
-            buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "+"
-            buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "-"
-            countBtn.style.display = count > 0 ? 'block' : 'none'; // Показываем контейнер кнопок
+            if (buttonCountNumber) {
+                buttonCountNumber.textContent = count > 0 ? count : ''; // Обновляем текст счетчика
+                buttonCountNumber.style.display = count > 0 ? 'block' : 'none'; // Показываем или скрываем счетчик
+            }
+            
+            if (btnSelect) {
+                btnSelect.style.display = count === 0 ? 'inline-block' : 'none'; // Показываем кнопку "Выбрать", если счетчик 0
+            }
+            
+            if (buttonCountPlus) {
+                buttonCountPlus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "+"
+            }
+            
+            if (buttonCountMinus) {
+                buttonCountMinus.style.display = count > 0 ? 'inline-block' : 'none'; // Показываем кнопку "-"
+            }
+            
+            if (countBtn) {
+                countBtn.style.display = count > 0 ? 'block' : 'none'; // Показываем контейнер кнопок
+            }
         }
     });
 }
 
 // Функция обновления главной кнопки
 function updateMainButton() {
-    const totalCount = Array.from(document.querySelectorAll('.item')).reduce((total, currentItem) => {
-        const buttonCountNumber = currentItem.querySelector('#buttonCountNumber');
-        const currentCount = parseInt(buttonCountNumber.textContent) || 0;
-        return total + currentCount;
-    }, 0);
+    const items = document.querySelectorAll('.item');
+    let totalCount = 0;
+
+    items.forEach(item => {
+        const buttonCountNumber = item.querySelector('#buttonCountNumber');
+        if (buttonCountNumber) {
+            const currentCount = parseInt(buttonCountNumber.textContent) || 0;
+            totalCount += currentCount;
+        }
+    });
 
     if (totalCount > 0) {
         tg.MainButton.setText(`В корзину (${totalCount})`);
@@ -102,18 +128,23 @@ function updateMainButton() {
 
 // Функция перехода в корзину
 function goToCart() {
-    const selectedItems = Array.from(document.querySelectorAll('.item'))
-        .map(item => {
-            const buttonCountNumber = item.querySelector('#buttonCountNumber');
+    const items = document.querySelectorAll('.item');
+    const selectedItems = [];
+
+    items.forEach(item => {
+        const buttonCountNumber = item.querySelector('#buttonCountNumber');
+        if (buttonCountNumber) {
             const count = parseInt(buttonCountNumber.textContent) || 0;
-            return {
-                id: item.dataset.id,
-                name: item.querySelector('.product-name').textContent,
-                price: item.querySelector('.product-price').textContent,
-                count: count
-            };
-        })
-        .filter(item => item.count > 0);
+            if (count > 0) {
+                selectedItems.push({
+                    id: item.dataset.id,
+                    name: item.querySelector('.product-name').textContent,
+                    price: item.querySelector('.product-price').textContent,
+                    count: count
+                });
+            }
+        }
+    });
 
     if (selectedItems.length > 0) {
         // Сохраняем данные в localStorage
