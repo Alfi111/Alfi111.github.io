@@ -1,6 +1,14 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
+// Устанавливаем заголовок для страницы корзины
+if (window.location.pathname.includes('cart.html')) {
+    tg.setHeaderColor('#2481cc');
+    tg.MainButton.setParams({
+        color: '#2481cc'
+    });
+}
+
 // Определяем текущую страницу
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
@@ -24,19 +32,21 @@ function setupTelegramButtons() {
         
         // Настраиваем зеленую кнопку
         tg.MainButton.setParams({
-            color: '#00D200' // Зеленый цвет
+            color: '#00D200'
         });
     } else if (currentPage === 'cart.html') {
-        // На странице корзины показываем кнопку "Назад" в header
+        // Устанавливаем заголовок "Корзина"
+        tg.setHeaderColor('#2481cc');
+        
+        // Показываем кнопку "Назад" в header
         tg.BackButton.show();
         tg.BackButton.onClick(() => {
-            // Возвращаемся на главную страницу
             window.location.href = 'index.html';
         });
         
         // Настраиваем голубую кнопку оплаты
         tg.MainButton.setParams({
-            color: '#2481cc' // Голубой цвет
+            color: '#2481cc'
         });
     }
 
@@ -49,32 +59,28 @@ function setupTelegramButtons() {
         }
     });
 
-    // Обработчик закрытия приложения
+    // Обработчик закрытия приложения - только при полном закрытии
+    let isAppClosing = false;
+    
     tg.onEvent('viewportChanged', (event) => {
         console.log('Viewport changed:', event);
-        if (!tg.isExpanded) {
-            // Если приложение свернуто/закрыто, очищаем localStorage
+        // Очищаем только при явном закрытии приложения
+        if (event.isStateStable && !event.isExpanded) {
+            isAppClosing = true;
             setTimeout(() => {
-                localStorage.removeItem('cartItems');
-                console.log('LocalStorage очищен');
+                if (isAppClosing) {
+                    localStorage.removeItem('cartItems');
+                    console.log('LocalStorage очищен при закрытии приложения');
+                }
             }, 1000);
+        } else {
+            isAppClosing = false;
         }
     });
 
-    // Обработчик видимости страницы (для определения закрытия приложения)
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            setTimeout(() => {
-                localStorage.removeItem('cartItems');
-                console.log('LocalStorage очищен при скрытии страницы');
-            }, 1000);
-        }
-    });
-
-    // Также очищаем при полном закрытии
-    window.addEventListener('beforeunload', () => {
-        localStorage.removeItem('cartItems');
-        console.log('LocalStorage очищен перед закрытием');
+    // Восстанавливаем флаг при разворачивании
+    tg.onEvent('themeChanged', () => {
+        isAppClosing = false;
     });
 }
 
@@ -198,11 +204,13 @@ function saveCartState() {
         .filter(item => item.count > 0);
 
     localStorage.setItem('cartItems', JSON.stringify(selectedItems));
+    console.log('Cart saved:', selectedItems);
 }
 
 // Функция восстановления состояния корзины
 function restoreCartState() {
     const savedCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    console.log('Restoring cart:', savedCartItems);
     
     savedCartItems.forEach(savedItem => {
         const item = document.querySelector(`.item[data-id="${savedItem.id}"]`);
@@ -252,7 +260,7 @@ function goToCart() {
         .filter(item => item.count > 0);
 
     if (selectedItems.length > 0) {
-        // Сохраняем данные в localStorage для передачи на страницу корзины
+        console.log('Going to cart with items:', selectedItems);
         localStorage.setItem('cartItems', JSON.stringify(selectedItems));
         window.location.href = 'cart.html';
     }
@@ -260,8 +268,20 @@ function goToCart() {
 
 // Логика для страницы корзины
 function initCartPage() {
+    console.log('Initializing cart page');
+    
+    // Устанавливаем заголовок "Корзина"
+    tg.setHeaderColor('#2481cc');
+    
+    // Показываем кнопку "Назад" сразу
+    tg.BackButton.show();
+    tg.BackButton.onClick(() => {
+        window.location.href = 'index.html';
+    });
+
     // Загружаем товары из localStorage
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    console.log('Cart items loaded:', cartItems);
     
     if (cartItems.length === 0) {
         // Если корзина пуста, показываем сообщение
@@ -277,12 +297,9 @@ function initCartPage() {
         // Устанавливаем голубую кнопку с общей суммой
         tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
         tg.MainButton.setParams({
-            color: '#2481cc' // Голубой цвет
+            color: '#2481cc'
         });
         tg.MainButton.show();
-        
-        // Показываем кнопку "Назад"
-        tg.BackButton.show();
     }
 }
 
@@ -294,6 +311,16 @@ function displayCartItems(cartItems) {
     cartContainer.style.padding = '20px';
     
     let totalAmount = 0;
+    
+    // Добавляем заголовок
+    const title = document.createElement('h2');
+    title.textContent = 'Корзина';
+    title.style.cssText = `
+        color: var(--tg-theme-text-color);
+        margin-bottom: 20px;
+        text-align: center;
+    `;
+    cartContainer.appendChild(title);
     
     cartItems.forEach(item => {
         const itemTotal = item.price * item.count;
