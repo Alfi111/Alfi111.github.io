@@ -30,7 +30,8 @@ function setupTelegramButtons() {
         // На странице корзины показываем кнопку "Назад" в header
         tg.BackButton.show();
         tg.BackButton.onClick(() => {
-            window.history.back();
+            // Возвращаемся на главную страницу
+            window.location.href = 'index.html';
         });
         
         // Настраиваем голубую кнопку оплаты
@@ -50,15 +51,30 @@ function setupTelegramButtons() {
 
     // Обработчик закрытия приложения
     tg.onEvent('viewportChanged', (event) => {
-        if (event.isStateStable && event.isExpanded === false) {
-            // Если приложение закрыто/свернуто, очищаем localStorage
-            localStorage.removeItem('cartItems');
+        console.log('Viewport changed:', event);
+        if (!tg.isExpanded) {
+            // Если приложение свернуто/закрыто, очищаем localStorage
+            setTimeout(() => {
+                localStorage.removeItem('cartItems');
+                console.log('LocalStorage очищен');
+            }, 1000);
+        }
+    });
+
+    // Обработчик видимости страницы (для определения закрытия приложения)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            setTimeout(() => {
+                localStorage.removeItem('cartItems');
+                console.log('LocalStorage очищен при скрытии страницы');
+            }, 1000);
         }
     });
 
     // Также очищаем при полном закрытии
-    tg.onEvent('beforeUnload', () => {
+    window.addEventListener('beforeunload', () => {
         localStorage.removeItem('cartItems');
+        console.log('LocalStorage очищен перед закрытием');
     });
 }
 
@@ -259,16 +275,21 @@ function initCartPage() {
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
         
         // Устанавливаем голубую кнопку с общей суммой
-        tg.MainButton.setText(`Оплатить (${totalAmount}₽)`);
+        tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
         tg.MainButton.setParams({
             color: '#2481cc' // Голубой цвет
         });
         tg.MainButton.show();
+        
+        // Показываем кнопку "Назад"
+        tg.BackButton.show();
     }
 }
 
 // Функция отображения товаров в корзине
 function displayCartItems(cartItems) {
+    // Очищаем body и добавляем контейнер
+    document.body.innerHTML = '';
     const cartContainer = document.createElement('div');
     cartContainer.style.padding = '20px';
     
