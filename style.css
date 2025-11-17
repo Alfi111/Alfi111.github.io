@@ -125,8 +125,15 @@ body {
 	z-index: 10;
 }
 
+.count_btn {
+    display: none;
+}
 
-
+/* Стили для зеленой MainButton Telegram */
+.tg-main-button {
+    background: rgb(0, 210, 0) !important;
+    color: white !important;
+}
 
 /*
 var(--tg-theme-bg-color)
