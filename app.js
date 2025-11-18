@@ -163,7 +163,7 @@ function setupCartButton() {
     
     if (cartItems.length > 0) {
         const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
-        tg.MainButton.setText(`Оплатить ${totalAmount}₽`);
+        tg.MainButton.setText(`К оплате ${totalAmount}₽`);
         tg.MainButton.setParams({ color: '#00D200' });
         tg.MainButton.show();
     } else {
