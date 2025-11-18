@@ -146,7 +146,7 @@ body {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
     justify-content: space-between;
     align-items: center;
-    padding: 15px 18px;
+    padding: 15px 18px; /* Существующий отступ */
     box-sizing: border-box;
 }
 
@@ -155,6 +155,7 @@ body {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
+    padding: 0 10px; /* Добавлен одинаковый отступ слева и справа */
 }
 
 .edit-button {
@@ -165,7 +166,7 @@ body {
     font-weight: 500;
     cursor: pointer;
     text-decoration: none;
-    padding-right: 10px;
+    padding: 0 10px; /* Добавлен одинаковый отступ слева и справа */
 }
 
 .edit-button:hover {
