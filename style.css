@@ -259,7 +259,7 @@ body {
 
 .comment-section {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
-    padding: 18px 0; /* Установите одинаковые отступы сверху и снизу */
+    padding: 18px 15px 10px 15px; /* Установите одинаковые отступы сверху и снизу */
     margin-top: 15px;
     margin-bottom: 0;
     width: 100%;
