@@ -293,3 +293,10 @@ function processPayment() {
         }
     });
 }
+
+const textarea = document.querySelector('.comment-input');
+
+textarea.addEventListener('input', function () {
+    this.style.height = 'auto'; // Сбросить высоту
+    this.style.height = this.scrollHeight + 'px'; // Установить высоту в соответствии с содержимым
+});
