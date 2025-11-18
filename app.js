@@ -1,6 +1,9 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
+// Конфигурация платежей
+const PAYMENTS_TOKEN = '401643678:TEST:b3003706-3cf5-47d9-b182-f7f0f601b221';
+
 // Инициализация приложения
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -271,32 +274,86 @@ function getItemDetails(itemId) {
     return itemDetails[itemId] || { description: 'Товар' };
 }
 
+// Генерация номера заказа
+function generateOrderNumber() {
+    return '#' + Math.floor(100000 + Math.random() * 900000);
+}
+
+// Создание описания заказа для платежа
+function createOrderDescription(cartItems) {
+    let description = 'Ваш заказ:\n\n';
+    cartItems.forEach(item => {
+        description += `• ${item.name} - ${item.count} шт. x ${item.price}₽\n`;
+    });
+    description += '\nПрекрасный перекус с Durger King';
+    return description;
+}
+
+// Процесс оплаты через Telegram Payments
 function processPayment() {
     const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
     
-    tg.showPopup({
-        title: 'Оплата',
-        message: `Сумма к оплате: ${totalAmount} руб.`,
-        buttons: [
-            {id: 'confirm', type: 'ok', text: 'Подтвердить'},
-            {id: 'cancel', type: 'cancel', text: 'Отмена'}
-        ]
-    }, (buttonId) => {
-        if (buttonId === 'confirm') {
-            tg.showAlert('Заказ успешно оформлен!');
+    if (cartItems.length === 0) {
+        tg.showAlert('Корзина пуста!');
+        return;
+    }
+
+    const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.count), 0);
+    const orderNumber = generateOrderNumber();
+    
+    // Создаем данные для инвойса
+    const invoiceData = {
+        title: `Заказ ${orderNumber}`,
+        description: createOrderDescription(cartItems),
+        payload: JSON.stringify({
+            orderNumber: orderNumber,
+            items: cartItems,
+            totalAmount: totalAmount,
+            userId: tg.initDataUnsafe?.user?.id
+        }),
+        provider_token: PAYMENTS_TOKEN,
+        currency: 'RUB',
+        prices: [
+            {
+                label: `Заказ ${orderNumber}`,
+                amount: totalAmount * 100 // В копейках
+            }
+        ],
+        photo_url: 'https://raw.githubusercontent.com/telegram-mini-apps/website/main/public/img.png', // Замените на ваше изображение
+        need_name: true,
+        need_phone_number: true,
+        need_shipping_address: true,
+        is_flexible: true
+    };
+
+    // Открываем инвойс
+    tg.openInvoice(invoiceData, (status) => {
+        if (status === 'paid') {
+            // Успешная оплата
+            tg.showAlert('Оплата прошла успешно! Ваш заказ принят.');
             localStorage.removeItem('cartItems');
             setTimeout(() => {
                 showPage('index');
-                initProductPage(); // Переинициализируем товары
+                initProductPage();
             }, 2000);
+        } else if (status === 'failed') {
+            tg.showAlert('Оплата не прошла. Попробуйте еще раз.');
+        } else if (status === 'cancelled') {
+            // Пользователь отменил оплату
+            console.log('Платеж отменен пользователем');
         }
     });
 }
 
+// Автоматическое изменение высоты textarea для комментария
 const textarea = document.querySelector('.comment-input');
-
-textarea.addEventListener('input', function () {
-    this.style.height = 'auto'; // Сбросить высоту
-    this.style.height = this.scrollHeight + 'px'; // Установить высоту в соответствии с содержимым
-});
+if (textarea) {
+    textarea.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+    
+    // Инициализация высоты при загрузке
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
