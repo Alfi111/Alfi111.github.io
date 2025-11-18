@@ -146,7 +146,7 @@ body {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
     justify-content: space-between;
     align-items: center;
-    padding: 15px 18px; /* Существующий отступ */
+    padding: 15px 18px;
     box-sizing: border-box;
 }
 
@@ -155,7 +155,7 @@ body {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
-    padding-left: 10px; /* Добавлен одинаковый отступ слева и справа */
+    padding-left: 10px; /* Установите отступ слева для заголовка */
 }
 
 .edit-button {
@@ -166,7 +166,8 @@ body {
     font-weight: 500;
     cursor: pointer;
     text-decoration: none;
-    padding-right: 10px; /* Добавлен одинаковый отступ слева и справа */
+    padding-right: 10px; /* Установите отступ справа для кнопки */
+    padding-left: 10px; /* Добавьте отступ слева для кнопки */
 }
 
 .edit-button:hover {
@@ -279,7 +280,7 @@ body {
     outline: none;
     min-height: 24px;
     max-height: 120px;
-    padding: 0 18px; /* Установите отступы внутри textarea */
+    padding: 18px; /* Установите отступы внутри textarea */
     line-height: 1.4;
     box-sizing: border-box;
     overflow: hidden; /* Скрыть полосу прокрутки */
