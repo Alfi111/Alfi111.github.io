@@ -154,8 +154,7 @@ body {
     color: var(--tg-theme-text-color);
     font-size: 18px;
     font-weight: 600;
-    margin: 0;
-    padding-left: 10px; /* Установите отступ слева для заголовка */
+    margin: 0 10px; /* Установите одинаковые отступы слева и справа */
 }
 
 .edit-button {
@@ -166,8 +165,7 @@ body {
     font-weight: 500;
     cursor: pointer;
     text-decoration: none;
-    padding-right: 10px; /* Установите отступ справа для кнопки */
-    padding-left: 10px; /* Добавьте отступ слева для кнопки */
+    margin: 0 10px; /* Установите одинаковые отступы слева и справа */
 }
 
 .edit-button:hover {
