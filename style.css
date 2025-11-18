@@ -277,7 +277,7 @@ body {
     outline: none;
     min-height: 24px;
     max-height: 120px;
-    padding: 0px; /* Установите отступы внутри textarea */
+    padding: 18px; /* Установите отступы внутри textarea */
     line-height: 1.4;
     box-sizing: border-box;
     overflow: hidden; /* Скрыть полосу прокрутки */
