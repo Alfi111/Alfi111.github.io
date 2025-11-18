@@ -6,13 +6,6 @@
     <link rel="stylesheet" href="style.css">
     <title>Магазин</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <style>
-        .comment-input {
-            width: 100%;
-            overflow: hidden; /* Скрыть полосу прокрутки */
-            resize: none; /* Отключить возможность изменения размера */
-        }
-    </style>
 </head>
 <body>
     <!-- Главная страница -->
@@ -106,13 +99,6 @@
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="app.js"></script>
-    <script>
-        const textarea = document.querySelector('.comment-input');
-
-        textarea.addEventListener('input', function () {
-            this.style.height = 'auto'; // Сбросить высоту
-            this.style.height = this.scrollHeight + 'px'; // Установить высоту в соответствии с содержимым
-        });
-    </script>
+    
 </body>
 </html>
