@@ -259,7 +259,7 @@ body {
 
 .comment-section {
     background: var(--tg-theme-secondary-bg-color, #f8f9fa);
-    padding: 18px;
+    padding: ;
     margin-top: 15px;
     margin-bottom: 0;
     width: 100%;
@@ -280,6 +280,8 @@ body {
     padding: 0;
     line-height: 1.4;
     box-sizing: border-box;
+    overflow: hidden; /* Скрыть полосу прокрутки */
+    resize: none; /* Отключить возможность изменения размера */
 }
 
 .comment-input::placeholder {
