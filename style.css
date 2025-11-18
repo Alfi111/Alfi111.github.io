@@ -155,7 +155,7 @@ body {
     font-size: 18px;
     font-weight: 600;
     margin: 0;
-    padding: 0 10px; /* Добавлен одинаковый отступ слева и справа */
+    padding-left: 10px; /* Добавлен одинаковый отступ слева и справа */
 }
 
 .edit-button {
@@ -166,7 +166,7 @@ body {
     font-weight: 500;
     cursor: pointer;
     text-decoration: none;
-    padding: 0 10px; /* Добавлен одинаковый отступ слева и справа */
+    padding-right: 10px; /* Добавлен одинаковый отступ слева и справа */
 }
 
 .edit-button:hover {
@@ -279,7 +279,7 @@ body {
     outline: none;
     min-height: 24px;
     max-height: 120px;
-    padding: 18px; /* Установите отступы внутри textarea */
+    padding: 0px; /* Установите отступы внутри textarea */
     line-height: 1.4;
     box-sizing: border-box;
     overflow: hidden; /* Скрыть полосу прокрутки */
