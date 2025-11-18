@@ -292,7 +292,6 @@ body {
     margin-top: 8px;
     line-height: 1.3;
     padding: 0 18px;
-    background: var(--tg-theme-secondary-bg-color, #f8f9fa);
     box-sizing: border-box;
 }
 
